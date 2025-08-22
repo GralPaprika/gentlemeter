@@ -38,7 +38,7 @@ fun LevelUpOverlay(
 
     LaunchedEffect(isExiting) {
         if (isExiting) {
-            delay(1000)
+            delay(1400)
             onDismissed()
             isExiting = false
         }
@@ -46,9 +46,9 @@ fun LevelUpOverlay(
 
     AnimatedVisibility(
         visible = visible && !isExiting,
-        enter = fadeIn(animationSpec = tween(700)),
-        exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-            targetOffsetY = { -it }, animationSpec = tween(1000)
+        enter = fadeIn(animationSpec = tween(1400)),
+        exit = fadeOut(animationSpec = tween(600)) + slideOutVertically(
+            targetOffsetY = { -it }, animationSpec = tween(1400)
         )
     ) {
         Box(
