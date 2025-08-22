@@ -1,15 +1,384 @@
+# Android Studio/IntelliJ
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.gradle/
+
+# Build outputs
+build/
+app/build/
+
+# Local configuration
 local.properties
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Log files
+*.log
+
+# APKs, AABs, and other package outputs
+*.apk
+*.ap_*
+*.aab
+
+# Generated files
+captures/
+output.json
+
+# Test reports
+*.html
+*.xml
+*.json
+
+# Kotlin/Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Misc
+*.swp
+*.swo
+
+# Ignore node_modules if using JS tools
+node_modules/
+
+# Ignore crashlytics and fabric files
+crashlytics-build.properties
+fabric.properties
+
+# Ignore local keystore files
+*.jks
+
+# Ignore temporary files
+*.tmp
+
+# Ignore Android Studio navigation JSON
+app/build/intermediates/navigation_json/
+
+# Ignore Hilt generated files
+app/build/generated/hilt/
+
+# Ignore other intermediates
+app/build/intermediates/
+
+# Ignore external native build
+.externalNativeBuild/
+
+# Ignore gradle caches
+.cxx/
+
+# Ignore snapshot files
+app/build/snapshot/
+
+# Ignore kotlin build cache
+app/build/tmp/
+
+# Ignore APK outputs
+app/build/outputs/
+
+# Ignore reports
+build/reports/
+
+# Ignore test output
+app/build/test/
+
+# Ignore annotation processor output
+app/build/generated/ap_generated_sources/
+
+# Ignore proguard mapping
+app/build/outputs/mapping/
+
+# Ignore signing config
+app/build/outputs/signing_config_versions/
+
+# Ignore resource merge output
+app/build/intermediates/merged_res/
+
+# Ignore resource blame output
+app/build/intermediates/merged_res_blame_folder/
+
+# Ignore resource validation report
+app/build/intermediates/nested_resources_validation_report/
+
+# Ignore all .apk and .aab files in any folder
+**/*.apk
+**/*.aab
+
+# Ignore all .dex files
+**/*.dex
+
+# Ignore all .class files
+**/*.class
+
+# Ignore all .jar files
+**/*.jar
+
+# Ignore all .war files
+**/*.war
+
+# Ignore all .ear files
+**/*.ear
+
+# Ignore all .swp and .swo files
+**/*.swp
+**/*.swo
+
+# Ignore all .tmp files
+**/*.tmp
+
+# Ignore all .log files
+**/*.log
+
+# Ignore all .json files in build folders
+**/build/**/*.json
+
+# Ignore all .xml files in build folders
+**/build/**/*.xml
+
+# Ignore all .html files in build folders
+**/build/**/*.html
+
+# Ignore all .txt files in build folders
+**/build/**/*.txt
+
+# Ignore all .properties files in build folders
+**/build/**/*.properties
+
+# Ignore all .db files
+**/*.db
+
+# Ignore all .db-journal files
+**/*.db-journal
+
+# Ignore all .db-wal files
+**/*.db-wal
+
+# Ignore all .db-shm files
+**/*.db-shm
+
+# Ignore all .lock files
+**/*.lock
+
+# Ignore all .keystore files
+**/*.keystore
+
+# Ignore all .jks files
+**/*.jks
+
+# Ignore all .pem files
+**/*.pem
+
+# Ignore all .key files
+**/*.key
+
+# Ignore all .crt files
+**/*.crt
+
+# Ignore all .p12 files
+**/*.p12
+
+# Ignore all .pfx files
+**/*.pfx
+
+# Ignore all .der files
+**/*.der
+
+# Ignore all .csr files
+**/*.csr
+
+# Ignore all .srl files
+**/*.srl
+
+# Ignore all .pub files
+**/*.pub
+
+# Ignore all .asc files
+**/*.asc
+
+# Ignore all .gpg files
+**/*.gpg
+
+# Ignore all .pgp files
+**/*.pgp
+
+# Ignore all .sig files
+**/*.sig
+
+# Ignore all .bin files
+**/*.bin
+
+# Ignore all .dat files
+**/*.dat
+
+# Ignore all .bak files
+**/*.bak
+
+# Ignore all .old files
+**/*.old
+
+# Ignore all .orig files
+**/*.orig
+
+# Ignore all .rej files
+**/*.rej
+
+# Ignore all .sublime-workspace files
+**/*.sublime-workspace
+
+# Ignore all .sublime-project files
+**/*.sublime-project
+
+# Ignore all .vscode files
+.vscode/
+
+# Ignore all .idea files
+.idea/
+
+# Ignore all .iml files
+*.iml
+
+# Ignore all .ipr files
+*.ipr
+
+# Ignore all .iws files
+*.iws
+
+# Ignore all .editorconfig files
+.editorconfig
+
+# Ignore all .gitattributes files
+.gitattributes
+
+# Ignore all .gitmodules files
+.gitmodules
+
+# Ignore all .gitignore files
+.gitignore
+
+# Ignore all .gitkeep files
+.gitkeep
+
+# Ignore all .gitconfig files
+.gitconfig
+
+# Ignore all .gitlab-ci.yml files
+.gitlab-ci.yml
+
+# Ignore all .travis.yml files
+.travis.yml
+
+# Ignore all .circleci files
+.circleci/
+
+# Ignore all .github files
+.github/
+
+# Ignore all .git files
+.git/
+
+# Ignore all .svn files
+.svn/
+
+# Ignore all .hg files
+.hg/
+
+# Ignore all .bzr files
+.bzr/
+
+# Ignore all .cvs files
+.cvs/
+
+# Ignore all .DS_Store files
+.DS_Store
+
+# Ignore all Thumbs.db files
+Thumbs.db
+
+# Ignore all desktop.ini files
+desktop.ini
+
+# Ignore all ehthumbs.db files
+ehthumbs.db
+
+# Ignore all Icon?
+Icon?
+
+# Ignore all .Spotlight-V100 files
+.Spotlight-V100
+
+# Ignore all .Trashes files
+.Trashes
+
+# Ignore all .fseventsd files
+.fseventsd
+
+# Ignore all .TemporaryItems files
+.TemporaryItems
+
+# Ignore all .apdisk files
+.apdisk
+
+# Ignore all .AppleDouble files
+.AppleDouble
+
+# Ignore all .LSOverride files
+.LSOverride
+
+# Ignore all .DocumentRevisions-V100 files
+.DocumentRevisions-V100
+
+# Ignore all .com.apple.timemachine.donotpresent files
+.com.apple.timemachine.donotpresent
+
+# Ignore all .MobileBackups files
+.MobileBackups
+
+# Ignore all .SyncServices files
+.SyncServices
+
+# Ignore all .dbfseventsd files
+.dbfseventsd
+
+# Ignore all .Spotlight-V100 files
+.Spotlight-V100
+
+# Ignore all .Trashes files
+.Trashes
+
+# Ignore all .fseventsd files
+.fseventsd
+
+# Ignore all .TemporaryItems files
+.TemporaryItems
+
+# Ignore all .apdisk files
+.apdisk
+
+# Ignore all .AppleDouble files
+.AppleDouble
+
+# Ignore all .LSOverride files
+.LSOverride
+
+# Ignore all .DocumentRevisions-V100 files
+.DocumentRevisions-V100
+
+# Ignore all .com.apple.timemachine.donotpresent files
+.com.apple.timemachine.donotpresent
+
+# Ignore all .MobileBackups files
+.MobileBackups
+
+# Ignore all .SyncServices files
+.SyncServices
+
+# Ignore all .dbfseventsd files
+.dbfseventsd
+
