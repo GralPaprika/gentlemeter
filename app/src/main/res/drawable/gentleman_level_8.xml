@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFE0B2"
+        android:pathData="M100,100 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0"/>
+    
+    <!-- Gentleman's head -->
+    <path
+        android:fillColor="#FFCC80"
+        android:pathData="M100,80 m-25,0 a25,25 0 1,0 50,0 a25,25 0 1,0 -50,0"/>
+    
+    <!-- Gentleman's suit (shredded) -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M75,105 L125,105 L125,160 L75,160 Z"/>
+    
+    <!-- Eyes (primitive) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M90,75 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M110,75 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+    
+    <!-- Primitive eyebrows -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M84,72 L100,66"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M100,66 L116,72"/>
+    
+    <!-- Primitive mustache and beard -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M77,85 Q100,98 123,85"/>
+    
+    <!-- Primitive mouth -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M90,90 Q100,79 110,90"
+        android:strokeWidth="3"
+        android:strokeColor="#000000" />
+    
+    <!-- Primitive wrinkles -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M88,70 L112,70"
+        android:strokeWidth="3"
+        android:strokeColor="#000000"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M86,68 L114,68"
+        android:strokeWidth="3"
+        android:strokeColor="#000000"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M84,66 L116,66"
+        android:strokeWidth="3"
+        android:strokeColor="#000000"/>
+    
+    <!-- Primitive hair -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M69,60 Q100,52 131,60"/>
+    
+    <!-- Full primitive beard -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M80,88 L120,88"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M79,89 L121,89"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M78,90 L122,90"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M77,91 L123,91"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M76,92 L124,92"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M75,93 L125,93"/>
+</vector>
+

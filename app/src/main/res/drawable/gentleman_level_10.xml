@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFE0B2"
+        android:pathData="M100,100 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0"/>
+    
+    <!-- Gentleman's head -->
+    <path
+        android:fillColor="#FFCC80"
+        android:pathData="M100,80 m-25,0 a25,25 0 1,0 50,0 a25,25 0 1,0 -50,0"/>
+    
+    <!-- Gentleman's suit (completely gone) -->
+    
+    <!-- Eyes (complete caveman) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M90,75 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M110,75 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"/>
+    
+    <!-- Complete caveman eyebrows -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M82,72 L102,64"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M98,64 L118,72"/>
+    
+    <!-- Complete caveman mustache and beard -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M75,85 Q100,100 125,85"/>
+    
+    <!-- Complete caveman mouth -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M90,90 Q100,77 110,90"
+        android:strokeWidth="3"
+        android:strokeColor="#000000" />
+    
+    <!-- Complete caveman wrinkles -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M86,70 L114,70"
+        android:strokeWidth="3"
+        android:strokeColor="#000000"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M84,68 L116,68"
+        android:strokeWidth="3"
+        android:strokeColor="#000000"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M82,66 L118,66"
+        android:strokeWidth="3"
+        android:strokeColor="#000000"/>
+    
+    <!-- Complete caveman hair -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M67,60 Q100,50 133,60"/>
+    
+    <!-- Complete caveman beard -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M78,88 L122,88"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M77,89 L123,89"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M76,90 L124,90"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M75,91 L125,91"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M74,92 L126,92"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M73,93 L127,93"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M72,94 L128,94"/>
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M71,95 L129,95"/>
+    
+    <!-- Caveman club (optional) -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M130,120 L140,120 L140,160 L130,160 Z"/>
+</vector>
+

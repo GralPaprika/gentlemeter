@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFE0B2"
+        android:pathData="M100,100 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0"/>
+    
+    <!-- Gentleman's head -->
+    <path
+        android:fillColor="#FFCC80"
+        android:pathData="M100,80 m-25,0 a25,25 0 1,0 50,0 a25,25 0 1,0 -50,0"/>
+    
+    <!-- Top hat -->
+    <path
+        android:fillColor="#424242"
+        android:pathData="M75,55 L125,55 L125,65 L75,65 Z"/>
+    <path
+        android:fillColor="#424242"
+        android:pathData="M70,65 L130,65 L130,75 L70,75 Z"/>
+    
+    <!-- Gentleman's suit -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M75,105 L125,105 L125,160 L75,160 Z"/>
+    
+    <!-- Tie -->
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M95,105 L105,105 L100,160 Z"/>
+    
+    <!-- Eyes -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M90,75 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M110,75 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/>
+    
+    <!-- Mustache -->
+    <path
+        android:fillColor="#8D6E63"
+        android:pathData="M85,85 Q100,90 115,85"/>
+    
+    <!-- Smile -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M90,90 Q100,95 110,90"
+        android:strokeWidth="2"
+        android:strokeColor="#000000" />
+</vector>
+
