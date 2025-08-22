@@ -7,5 +7,5 @@ import javax.inject.Inject
 class GetBarbarianLevelUseCase @Inject constructor(
     private val repository: BarbarianRepository
 ) {
-    operator fun invoke(): Int = repository.getCurrentBarbarianLevel()
+    suspend operator fun invoke(): Int = repository.getCurrentBarbarianLevel()
 }

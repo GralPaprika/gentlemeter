@@ -28,7 +28,9 @@ class BarbarianViewModel @Inject constructor(
     }
     
     private fun loadInitialState() {
-        updateBarbarianState(getBarbarianLevelUseCase())
+        viewModelScope.launch {
+            updateBarbarianState(getBarbarianLevelUseCase())
+        }
     }
     
     fun onBarbarianButtonClicked() {

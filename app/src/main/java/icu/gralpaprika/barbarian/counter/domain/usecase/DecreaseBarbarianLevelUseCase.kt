@@ -6,7 +6,7 @@ import javax.inject.Inject
 class DecreaseBarbarianLevelUseCase @Inject constructor(
     private val repository: BarbarianRepository
 ) {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         if (repository.getCurrentBarbarianLevel() > repository.minBarbarianLevel) {
             repository.decreaseBarbarianLevel()
         }
