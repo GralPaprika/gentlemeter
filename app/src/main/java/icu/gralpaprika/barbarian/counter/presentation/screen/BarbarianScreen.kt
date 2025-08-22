@@ -44,7 +44,6 @@ fun BarbarianScreenContent(
     val screenSize = LocalWindowInfo.current.containerSize
     val screenHeight = screenSize.height
     val screenWidth = screenSize.width
-    // Overlay state for level 10
     var showLevelUp by remember { mutableStateOf(false) }
     val imageSize = when {
         screenHeight < 600 -> 200.dp
@@ -67,90 +66,54 @@ fun BarbarianScreenContent(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(spacing)
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.barbarian_acts_counter, barbarianState.barbarianLevel),
-                fontSize = when {
-                    screenWidth < 400 -> 14.sp
-                    else -> 16.sp
-                },
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Card(
+        if (barbarianState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
+            Column(
                 modifier = Modifier
-                    .size(imageSize)
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp
-                )
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(spacing)
             ) {
-                Image(
-                    painter = painterResource(
-                        id = BarbarianImageUtil.getImageForBarbarianLevel(barbarianState.barbarianLevel)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(
+                        R.string.barbarian_acts_counter,
+                        barbarianState.barbarianLevel
                     ),
-                    contentDescription = stringResource(R.string.gentleman_image_description),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    contentScale = ContentScale.Fit
+                    fontSize = when {
+                        screenWidth < 400 -> 14.sp
+                        else -> 16.sp
+                    },
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
-            }
-            // Buttons
-            if (barbarianState.barbarianLevel == MIN_BARBARIAN_LEVEL) {
-                Button(
-                    onClick = onBarbarianButtonClicked,
-                    modifier = Modifier.fillMaxWidth(0.7f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                Card(
+                    modifier = Modifier
+                        .size(imageSize)
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
                 ) {
-                    Text(
-                        text = stringResource(R.string.barbarian_button),
-                        fontSize = when {
-                            screenWidth < 400 -> 12.sp
-                            else -> 14.sp
-                        }
+                    Image(
+                        painter = painterResource(
+                            id = BarbarianImageUtil.getImageForBarbarianLevel(barbarianState.barbarianLevel)
+                        ),
+                        contentDescription = stringResource(R.string.gentleman_image_description),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        contentScale = ContentScale.Fit
                     )
                 }
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Button(
-                        onClick = onGentlemanButtonClicked,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onSecondary
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.gentleman_button),
-                            fontSize = when {
-                                screenWidth < 400 -> 12.sp
-                                else -> 14.sp
-                            }
-                        )
-                    }
+                // Buttons
+                if (barbarianState.barbarianLevel == MIN_BARBARIAN_LEVEL) {
                     Button(
                         onClick = onBarbarianButtonClicked,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(0.7f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -164,19 +127,55 @@ fun BarbarianScreenContent(
                             }
                         )
                     }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = onGentlemanButtonClicked,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.gentleman_button),
+                                fontSize = when {
+                                    screenWidth < 400 -> 12.sp
+                                    else -> 14.sp
+                                }
+                            )
+                        }
+                        Button(
+                            onClick = onBarbarianButtonClicked,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.barbarian_button),
+                                fontSize = when {
+                                    screenWidth < 400 -> 12.sp
+                                    else -> 14.sp
+                                }
+                            )
+                        }
+                    }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        if (showLevelUp) {
-            LevelUpOverlay(
-                visible = true,
-                imageSize = imageSize,
-                onButtonClicked = { onBarbarianButtonClicked() },
-                onDismissed = { showLevelUp = false },
-            )
-        }
+        LevelUpOverlay(
+            visible = showLevelUp,
+            imageSize = imageSize,
+            onButtonClicked = { onBarbarianButtonClicked() },
+            onDismissed = { showLevelUp = false },
+        )
     }
 }
 

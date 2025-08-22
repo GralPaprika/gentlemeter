@@ -36,11 +36,11 @@ fun LevelUpOverlay(
 ) {
     var isExiting by remember { mutableStateOf(false) }
 
-    // When exit starts, call onDismissed after animation
     LaunchedEffect(isExiting) {
         if (isExiting) {
-            delay(1000) // match exit animation duration
+            delay(1000)
             onDismissed()
+            isExiting = false
         }
     }
 
@@ -54,7 +54,7 @@ fun LevelUpOverlay(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background), // Solid background
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
         ) {
             Column(
