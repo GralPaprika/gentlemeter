@@ -8,7 +8,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import icu.gralpaprika.barbarian.counter.data.database.BarbarianDatabase
+import icu.gralpaprika.barbarian.counter.data.database.dao.ApologyDao
 import icu.gralpaprika.barbarian.counter.data.database.dao.BarbarianActDao
+import icu.gralpaprika.barbarian.counter.data.database.dao.BarbarianLevelDao
 import javax.inject.Singleton
 
 @Module
@@ -17,22 +19,22 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideBarbarianDatabase(@ApplicationContext context: Context): BarbarianDatabase {
-        return Room.databaseBuilder(
+    fun provideBarbarianDatabase(@ApplicationContext context: Context): BarbarianDatabase =
+        Room.databaseBuilder(
             context,
             BarbarianDatabase::class.java,
             "barbarian_database"
         ).build()
-    }
 
     @Provides
-    fun provideBarbarianActDao(database: BarbarianDatabase): BarbarianActDao {
-        return database.barbarianActDao()
-    }
+    fun provideBarbarianActDao(database: BarbarianDatabase): BarbarianActDao =
+        database.barbarianActDao()
 
     @Provides
-    fun provideBarbarianLevelDao(database: BarbarianDatabase) = database.barbarianLevelDao()
+    fun provideBarbarianLevelDao(database: BarbarianDatabase): BarbarianLevelDao =
+        database.barbarianLevelDao()
 
     @Provides
-    fun provideApologyDao(database: BarbarianDatabase) = database.apologyDao()
+    fun provideApologyDao(database: BarbarianDatabase): ApologyDao =
+        database.apologyDao()
 }
