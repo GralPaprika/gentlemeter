@@ -1,14 +1,20 @@
 <resources>
     <string name="app_name">Barbarian Counter</string>
-    
+
     <!-- Main screen strings -->
-    <string name="barbarian_acts_counter">Barbarian Acts: %1$d</string>
+    <string name="ungentlemanly_acts">UNGENTLEMANLY ACTS</string>
+    <string name="barbarian_acts_counter">%1$d</string>
     <string name="gentleman_image_description">Gentleman appearance based on barbarian level</string>
     <string name="gentleman_button">Gentleman</string>
-    <string name="barbarian_button">Barbarian</string>
-    
+    <string name="barbarian_button">You Jerk!</string>
+
     <!-- Level up strings -->
     <string name="level_up_message">You’re now a caveman!</string>
     <string name="continue_button">Continue</string>
     <string name="dismiss">Dismiss</string>
+
+    <!-- Gentleman dialog strings -->
+    <string name="gentleman_dialog_message">Are you sure THIS guy behave like a gentleman?.</string>
+    <string name="gentleman_dialog_confirm">Yes</string>
+    <string name="gentleman_dialog_cancel">Nah, still a jerk</string>
 </resources>

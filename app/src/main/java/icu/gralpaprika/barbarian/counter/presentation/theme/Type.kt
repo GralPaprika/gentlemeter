@@ -7,14 +7,40 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import icu.gralpaprika.barbarian.counter.R
+
+val PlayfairDisplay = FontFamily(
+    Font(R.font.playfair_display_regular),
+    Font(R.font.playfair_display_bold, FontWeight.Bold),
+    Font(R.font.playfair_display_black, FontWeight.Black),
+    Font(R.font.playfair_display_extrabold, FontWeight.ExtraBold),
+    Font(R.font.playfair_display_medium, FontWeight.Medium),
+    Font(R.font.playfair_display_semibold, FontWeight.SemiBold),
+)
+
+val PlusJakartaSans = FontFamily(
+    Font(R.font.plus_jakarta_sans_regular),
+    Font(R.font.plus_jakarta_sans_bold, FontWeight.Bold),
+    Font(R.font.plus_jakarta_sans_extrabold, FontWeight.ExtraBold),
+    Font(R.font.plus_jakarta_sans_extralight, FontWeight.ExtraLight),
+    Font(R.font.plus_jakarta_sans_light, FontWeight.Light),
+    Font(R.font.plus_jakarta_sans_medium, FontWeight.Medium),
+    Font(R.font.plus_jakarta_sans_semibold, FontWeight.SemiBold),
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = PlayfairDisplay,
+        fontWeight = FontWeight.Bold,
+        fontSize = 100.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -22,22 +48,6 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
 )
 
 @Preview(name = "Typography Preview", showBackground = true)

@@ -1,24 +1,30 @@
 package icu.gralpaprika.barbarian.counter.presentation.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import icu.gralpaprika.barbarian.counter.R
-import icu.gralpaprika.barbarian.counter.presentation.screen.BarbarianState
+import icu.gralpaprika.barbarian.counter.presentation.screen.model.OvalShapeSize
+import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
+import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
+import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
 import icu.gralpaprika.barbarian.counter.presentation.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.viewmodel.BarbarianViewModel
 
@@ -27,7 +33,6 @@ fun BarbarianScreen(
     viewModel: BarbarianViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
     BarbarianScreenContent(
         barbarianState = uiState,
         onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
@@ -44,59 +49,95 @@ fun BarbarianScreenContent(
     val screenSize = LocalWindowInfo.current.containerSize
     val screenHeight = screenSize.height
     val screenWidth = screenSize.width
+
     var showLevelUp by remember { mutableStateOf(false) }
-    val imageSize = when {
-        screenHeight < 600 -> 200.dp
-        screenHeight < 800 -> 250.dp
-        else -> 300.dp
+    var showModal by remember { mutableStateOf(false) }
+
+    val ovalBoxSize = when {
+        screenHeight < 600 -> OvalShapeSize(width = 200.dp, height = 300.dp)
+        screenHeight < 800 -> OvalShapeSize(width = 250.dp, height = 350.dp)
+        else -> OvalShapeSize(width = 300.dp, height = 400.dp)
     }
-    // Show overlay when reaching level 10
+
     LaunchedEffect(barbarianState.barbarianLevel) {
         if (barbarianState.barbarianLevel == MAX_BARBARIAN_LEVEL) {
             showLevelUp = true
         }
     }
+
     val padding = when {
         screenWidth < 400 -> 12.dp
         else -> 16.dp
     }
-    val spacing = when {
-        screenHeight < 600 -> 16.dp
-        else -> 24.dp
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        if (barbarianState.barbarianLevel > MIN_BARBARIAN_LEVEL) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                IconButton(
+                    onClick = { showModal = true },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.top_hat),
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
+            }
+        }
+
+        ConfirmDialog(
+            showModal = showModal,
+            onDismiss = { showModal = false },
+            onConfirm = {
+                onGentlemanButtonClicked()
+                showModal = false
+            },
+        )
+
         if (barbarianState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
                     .padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(spacing)
+                verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(
                         R.string.barbarian_acts_counter,
                         barbarianState.barbarianLevel
                     ),
-                    fontSize = when {
-                        screenWidth < 400 -> 14.sp
-                        else -> 16.sp
-                    },
+                    fontSize = 55.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = PlayfairDisplay,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = stringResource(R.string.ungentlemanly_acts),
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Card(
+                Spacer(modifier = Modifier.height(32.dp))
+                Box(
                     modifier = Modifier
-                        .size(imageSize)
-                        .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
+                        .size(width = ovalBoxSize.width, height = ovalBoxSize.height)
+                        .clip(OvalCornerShape())
+                        .background(MaterialTheme.colorScheme.onPrimary),
+                    contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(
@@ -104,67 +145,24 @@ fun BarbarianScreenContent(
                         ),
                         contentDescription = stringResource(R.string.gentleman_image_description),
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp),
-                        contentScale = ContentScale.Fit
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Crop
                     )
                 }
-                // Buttons
-                if (barbarianState.barbarianLevel == MIN_BARBARIAN_LEVEL) {
-                    Button(
-                        onClick = onBarbarianButtonClicked,
-                        modifier = Modifier.fillMaxWidth(0.7f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.barbarian_button),
-                            fontSize = when {
-                                screenWidth < 400 -> 12.sp
-                                else -> 14.sp
-                            }
-                        )
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Button(
-                            onClick = onGentlemanButtonClicked,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                contentColor = MaterialTheme.colorScheme.onSecondary
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(R.string.gentleman_button),
-                                fontSize = when {
-                                    screenWidth < 400 -> 12.sp
-                                    else -> 14.sp
-                                }
-                            )
-                        }
-                        Button(
-                            onClick = onBarbarianButtonClicked,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Text(
-                                text = stringResource(R.string.barbarian_button),
-                                fontSize = when {
-                                    screenWidth < 400 -> 12.sp
-                                    else -> 14.sp
-                                }
-                            )
-                        }
-                    }
+
+                Spacer(modifier = Modifier.height(32.dp))
+                Button(
+                    onClick = onBarbarianButtonClicked,
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.barbarian_button),
+                        fontSize = 18.sp
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -172,12 +170,48 @@ fun BarbarianScreenContent(
 
         LevelUpOverlay(
             visible = showLevelUp,
-            imageSize = imageSize,
+            imageSize = ovalBoxSize.height,
             onButtonClicked = { onBarbarianButtonClicked() },
             onDismissed = { showLevelUp = false },
         )
     }
 }
 
+@Composable
+fun ConfirmDialog(showModal: Boolean, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    if (showModal) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            text = { Text(stringResource(R.string.gentleman_dialog_message)) },
+            confirmButton = {
+                Button(
+                    onClick = { onConfirm() },
+                ) {
+                    Text(stringResource(R.string.gentleman_dialog_confirm))
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { onDismiss() },
+                ) {
+                    Text(stringResource(R.string.gentleman_dialog_cancel))
+                }
+            },
+        )
+    }
+}
+
 private const val MIN_BARBARIAN_LEVEL = 0
 private const val MAX_BARBARIAN_LEVEL = 10
+
+@Preview(showBackground = true)
+@Composable
+fun BarbarianScreenPreview() {
+    BarbarianCounterTheme(darkTheme = true, dynamicColor = true) {
+        BarbarianScreenContent(
+            barbarianState = BarbarianState(barbarianLevel = 0),
+            onGentlemanButtonClicked = {},
+            onBarbarianButtonClicked = {}
+        )
+    }
+}
