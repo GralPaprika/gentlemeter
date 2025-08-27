@@ -43,6 +43,7 @@ import icu.gralpaprika.barbarian.counter.presentation.screen.model.OvalShapeSize
 import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
 import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
+import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
 import icu.gralpaprika.barbarian.counter.presentation.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.viewmodel.BarbarianViewModel
 
@@ -144,7 +145,8 @@ fun BarbarianScreenContent(
                 Text(
                     text = stringResource(R.string.ungentlemanly_acts),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = PlusJakartaSans,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -179,6 +181,8 @@ fun BarbarianScreenContent(
                 ) {
                     Text(
                         text = stringResource(R.string.barbarian_button),
+                        fontFamily = PlusJakartaSans,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp
                     )
                 }
