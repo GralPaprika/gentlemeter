@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.google.ksp) apply false
+    alias(libs.plugins.google.services) apply false
 }
 buildscript {
     repositories {

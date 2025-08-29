@@ -1,10 +1,13 @@
 package icu.gralpaprika.barbarian.counter.presentation.screen
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,8 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import icu.gralpaprika.barbarian.counter.R
+import icu.gralpaprika.barbarian.counter.presentation.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.presentation.screen.model.OvalShapeSize
 import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
+import icu.gralpaprika.barbarian.counter.presentation.signin.SignInActivity
 import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
@@ -48,20 +54,22 @@ import icu.gralpaprika.barbarian.counter.presentation.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.viewmodel.BarbarianViewModel
 
 @Composable
-fun BarbarianScreen(
+fun CounterScreen(
     viewModel: BarbarianViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    BarbarianScreenContent(
-        barbarianState = uiState,
+    CounterScreenContent(
+        counterScreenState = uiState,
         onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
-        onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() }
+        onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() },
+        context = LocalContext.current
     )
 }
 
 @Composable
-fun BarbarianScreenContent(
-    barbarianState: BarbarianState,
+fun CounterScreenContent(
+    context: Context,
+    counterScreenState: CounterScreenState,
     onGentlemanButtonClicked: () -> Unit,
     onBarbarianButtonClicked: () -> Unit
 ) {
@@ -78,8 +86,8 @@ fun BarbarianScreenContent(
         else -> OvalShapeSize(width = 300.dp, height = 400.dp)
     }
 
-    LaunchedEffect(barbarianState.barbarianLevel) {
-        if (barbarianState.barbarianLevel == MAX_BARBARIAN_LEVEL) {
+    LaunchedEffect(counterScreenState.barbarianLevel) {
+        if (counterScreenState.barbarianLevel == MAX_BARBARIAN_LEVEL) {
             showLevelUp = true
         }
     }
@@ -90,12 +98,14 @@ fun BarbarianScreenContent(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (barbarianState.barbarianLevel > MIN_BARBARIAN_LEVEL) {
-            Box(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.TopEnd)
-            ) {
+        // Top right area with vertical arrangement
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.TopEnd),
+            horizontalAlignment = Alignment.End
+        ) {
+            if (counterScreenState.barbarianLevel > MIN_BARBARIAN_LEVEL) {
                 IconButton(
                     onClick = { showModal = true },
                     modifier = Modifier
@@ -110,6 +120,18 @@ fun BarbarianScreenContent(
                         contentScale = ContentScale.FillBounds
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            Button(
+                onClick = {
+                    context.startActivity(Intent(context, SignInActivity::class.java))
+                },
+                modifier = Modifier.size(48.dp),
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text("Sign in")
             }
         }
 
@@ -122,7 +144,7 @@ fun BarbarianScreenContent(
             },
         )
 
-        if (barbarianState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
+        if (counterScreenState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -133,7 +155,7 @@ fun BarbarianScreenContent(
                 Text(
                     text = stringResource(
                         R.string.barbarian_acts_counter,
-                        barbarianState.barbarianLevel
+                        counterScreenState.barbarianLevel
                     ),
                     fontSize = 55.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -161,7 +183,7 @@ fun BarbarianScreenContent(
                 ) {
                     Image(
                         painter = painterResource(
-                            id = BarbarianImageUtil.getImageForBarbarianLevel(barbarianState.barbarianLevel)
+                            id = BarbarianImageUtil.getImageForBarbarianLevel(counterScreenState.barbarianLevel)
                         ),
                         contentDescription = stringResource(R.string.gentleman_image_description),
                         modifier = Modifier
@@ -230,10 +252,11 @@ private const val MAX_BARBARIAN_LEVEL = 10
 @Composable
 fun BarbarianScreenPreview() {
     BarbarianCounterTheme(darkTheme = true, dynamicColor = true) {
-        BarbarianScreenContent(
-            barbarianState = BarbarianState(barbarianLevel = 0),
+        CounterScreenContent(
+            counterScreenState = CounterScreenState(barbarianLevel = 0),
             onGentlemanButtonClicked = {},
-            onBarbarianButtonClicked = {}
+            onBarbarianButtonClicked = {},
+            context = LocalContext.current
         )
     }
 }

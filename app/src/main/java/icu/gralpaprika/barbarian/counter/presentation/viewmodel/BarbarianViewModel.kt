@@ -3,7 +3,7 @@ package icu.gralpaprika.barbarian.counter.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import icu.gralpaprika.barbarian.counter.presentation.screen.BarbarianState
+import icu.gralpaprika.barbarian.counter.presentation.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.domain.usecase.DecreaseBarbarianLevelUseCase
 import icu.gralpaprika.barbarian.counter.domain.usecase.GetBarbarianLevelUseCase
 import icu.gralpaprika.barbarian.counter.domain.usecase.IncreaseBarbarianLevelUseCase
@@ -20,8 +20,8 @@ class BarbarianViewModel @Inject constructor(
     private val decreaseBarbarianLevelUseCase: DecreaseBarbarianLevelUseCase
 ) : ViewModel() {
     
-    private val _uiState = MutableStateFlow(BarbarianState())
-    val uiState: StateFlow<BarbarianState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(CounterScreenState())
+    val uiState: StateFlow<CounterScreenState> = _uiState.asStateFlow()
     
     init {
         loadInitialState()
@@ -48,6 +48,6 @@ class BarbarianViewModel @Inject constructor(
     }
 
     private fun updateBarbarianState(level: Int) {
-        _uiState.value = BarbarianState(barbarianLevel = level)
+        _uiState.value = CounterScreenState(barbarianLevel = level)
     }
 }
