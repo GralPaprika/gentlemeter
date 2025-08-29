@@ -1,4 +1,4 @@
-package icu.gralpaprika.barbarian.counter.presentation.screen
+package icu.gralpaprika.barbarian.counter.presentation.counter.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import icu.gralpaprika.barbarian.counter.R
-import icu.gralpaprika.barbarian.counter.presentation.util.BarbarianImageUtil
+import icu.gralpaprika.barbarian.counter.presentation.counter.util.BarbarianImageUtil
 import kotlinx.coroutines.delay
 
 @Composable

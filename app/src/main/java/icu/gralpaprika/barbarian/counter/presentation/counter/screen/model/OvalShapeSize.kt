@@ -1,4 +1,4 @@
-package icu.gralpaprika.barbarian.counter.presentation.screen.model
+package icu.gralpaprika.barbarian.counter.presentation.counter.screen.model
 
 import androidx.compose.ui.unit.Dp
 

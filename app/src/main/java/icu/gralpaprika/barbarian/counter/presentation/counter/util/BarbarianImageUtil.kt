@@ -1,4 +1,4 @@
-package icu.gralpaprika.barbarian.counter.presentation.util
+package icu.gralpaprika.barbarian.counter.presentation.counter.util
 
 import icu.gralpaprika.barbarian.counter.R
 

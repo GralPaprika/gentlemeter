@@ -3,7 +3,7 @@ package icu.gralpaprika.barbarian.counter.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import icu.gralpaprika.barbarian.counter.presentation.screen.model.CounterScreenState
+import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.domain.usecase.DecreaseBarbarianLevelUseCase
 import icu.gralpaprika.barbarian.counter.domain.usecase.GetBarbarianLevelUseCase
 import icu.gralpaprika.barbarian.counter.domain.usecase.IncreaseBarbarianLevelUseCase

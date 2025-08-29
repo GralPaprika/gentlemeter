@@ -1,7 +1,5 @@
-package icu.gralpaprika.barbarian.counter.presentation.screen
+package icu.gralpaprika.barbarian.counter.presentation.counter.screen
 
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,36 +40,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import icu.gralpaprika.barbarian.counter.R
-import icu.gralpaprika.barbarian.counter.presentation.screen.model.CounterScreenState
-import icu.gralpaprika.barbarian.counter.presentation.screen.model.OvalShapeSize
+import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.OvalShapeSize
+import icu.gralpaprika.barbarian.counter.presentation.counter.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
-import icu.gralpaprika.barbarian.counter.presentation.signin.SignInActivity
 import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
-import icu.gralpaprika.barbarian.counter.presentation.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.viewmodel.BarbarianViewModel
 
 @Composable
 fun CounterScreen(
-    viewModel: BarbarianViewModel = hiltViewModel()
+    onNavigateToSignIn: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    CounterScreenContent(
-        counterScreenState = uiState,
-        onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
-        onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() },
-        context = LocalContext.current
-    )
-}
+    val viewModel: BarbarianViewModel = hiltViewModel()
 
-@Composable
-fun CounterScreenContent(
-    context: Context,
-    counterScreenState: CounterScreenState,
-    onGentlemanButtonClicked: () -> Unit,
-    onBarbarianButtonClicked: () -> Unit
-) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val screenSize = LocalWindowInfo.current.containerSize
     val screenHeight = screenSize.height
     val screenWidth = screenSize.width
@@ -86,8 +69,8 @@ fun CounterScreenContent(
         else -> OvalShapeSize(width = 300.dp, height = 400.dp)
     }
 
-    LaunchedEffect(counterScreenState.barbarianLevel) {
-        if (counterScreenState.barbarianLevel == MAX_BARBARIAN_LEVEL) {
+    LaunchedEffect(uiState.barbarianLevel) {
+        if (uiState.barbarianLevel == MAX_BARBARIAN_LEVEL) {
             showLevelUp = true
         }
     }
@@ -105,7 +88,7 @@ fun CounterScreenContent(
                 .align(Alignment.TopEnd),
             horizontalAlignment = Alignment.End
         ) {
-            if (counterScreenState.barbarianLevel > MIN_BARBARIAN_LEVEL) {
+            if (uiState.barbarianLevel > MIN_BARBARIAN_LEVEL) {
                 IconButton(
                     onClick = { showModal = true },
                     modifier = Modifier
@@ -123,9 +106,7 @@ fun CounterScreenContent(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             Button(
-                onClick = {
-                    context.startActivity(Intent(context, SignInActivity::class.java))
-                },
+                onClick = { onNavigateToSignIn() },
                 modifier = Modifier.size(48.dp),
                 shape = CircleShape,
                 contentPadding = PaddingValues(0.dp),
@@ -139,12 +120,12 @@ fun CounterScreenContent(
             showModal = showModal,
             onDismiss = { showModal = false },
             onConfirm = {
-                onGentlemanButtonClicked()
+                viewModel.onGentlemanButtonClicked()
                 showModal = false
             },
         )
 
-        if (counterScreenState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
+        if (uiState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -155,7 +136,7 @@ fun CounterScreenContent(
                 Text(
                     text = stringResource(
                         R.string.barbarian_acts_counter,
-                        counterScreenState.barbarianLevel
+                        uiState.barbarianLevel
                     ),
                     fontSize = 55.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -183,7 +164,7 @@ fun CounterScreenContent(
                 ) {
                     Image(
                         painter = painterResource(
-                            id = BarbarianImageUtil.getImageForBarbarianLevel(counterScreenState.barbarianLevel)
+                            id = BarbarianImageUtil.getImageForBarbarianLevel(uiState.barbarianLevel)
                         ),
                         contentDescription = stringResource(R.string.gentleman_image_description),
                         modifier = Modifier
@@ -194,7 +175,7 @@ fun CounterScreenContent(
 
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = onBarbarianButtonClicked,
+                    onClick = { viewModel.onBarbarianButtonClicked() },
                     modifier = Modifier.fillMaxWidth(0.8f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -215,7 +196,7 @@ fun CounterScreenContent(
         LevelUpOverlay(
             visible = showLevelUp,
             imageSize = ovalBoxSize.height,
-            onButtonClicked = { onBarbarianButtonClicked() },
+            onButtonClicked = { viewModel.onBarbarianButtonClicked() },
             onDismissed = { showLevelUp = false },
         )
     }
@@ -247,16 +228,3 @@ fun ConfirmDialog(showModal: Boolean, onConfirm: () -> Unit, onDismiss: () -> Un
 
 private const val MIN_BARBARIAN_LEVEL = 0
 private const val MAX_BARBARIAN_LEVEL = 10
-
-@Preview(showBackground = true)
-@Composable
-fun BarbarianScreenPreview() {
-    BarbarianCounterTheme(darkTheme = true, dynamicColor = true) {
-        CounterScreenContent(
-            counterScreenState = CounterScreenState(barbarianLevel = 0),
-            onGentlemanButtonClicked = {},
-            onBarbarianButtonClicked = {},
-            context = LocalContext.current
-        )
-    }
-}
