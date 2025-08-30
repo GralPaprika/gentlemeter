@@ -28,7 +28,11 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
         composable<SignIn> {
-            SignInScreen()
+            SignInScreen(
+                onSignInSuccess = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
