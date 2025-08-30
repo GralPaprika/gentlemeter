@@ -33,8 +33,14 @@ fun SignInScreen(
 ) {
     val viewModel: SignInViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val isSignedIn by viewModel.isSignedIn.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // If already signed in, trigger success
+    if (isSignedIn) {
+        LaunchedEffect(Unit) { onSignInSuccess() }
+    }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(

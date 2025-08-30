@@ -16,5 +16,17 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
-}
 
+    override suspend fun signUpWithEmail(email: String, password: String): Result<Unit> {
+        return try {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun isUserSignedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
+}

@@ -6,28 +6,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.CounterScreen
 import icu.gralpaprika.barbarian.counter.presentation.signin.screen.SignInScreen
-import kotlinx.serialization.Serializable
-
-@Serializable
-object Counter
-
-@Serializable
-object SignIn
 
 @Composable
-fun AppNavGraph(navController: NavHostController) {
+fun AppNavGraph(navController: NavHostController, startDestination: Destination) {
     NavHost(
         navController = navController,
-        startDestination = Counter
+        startDestination = startDestination
     ) {
-        composable<Counter> {
+        composable<Destination.Counter> {
             CounterScreen(
                 onNavigateToSignIn = {
-                    navController.navigate(route = SignIn)
+                    navController.navigate(route = Destination.SignIn)
                 }
             )
         }
-        composable<SignIn> {
+        composable<Destination.SignIn> {
             SignInScreen(
                 onSignInSuccess = {
                     navController.popBackStack()
