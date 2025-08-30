@@ -1,4 +1,4 @@
-package icu.gralpaprika.barbarian.counter.presentation.viewmodel
+package icu.gralpaprika.barbarian.counter.presentation.counter.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BarbarianViewModel @Inject constructor(
+class CounterViewModel @Inject constructor(
     private val getBarbarianLevelUseCase: GetBarbarianLevelUseCase,
     private val increaseBarbarianLevelUseCase: IncreaseBarbarianLevelUseCase,
     private val decreaseBarbarianLevelUseCase: DecreaseBarbarianLevelUseCase

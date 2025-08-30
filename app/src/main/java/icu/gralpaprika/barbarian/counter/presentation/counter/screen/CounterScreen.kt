@@ -35,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,16 +42,15 @@ import icu.gralpaprika.barbarian.counter.R
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.OvalShapeSize
 import icu.gralpaprika.barbarian.counter.presentation.counter.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
-import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
-import icu.gralpaprika.barbarian.counter.presentation.viewmodel.BarbarianViewModel
+import icu.gralpaprika.barbarian.counter.presentation.counter.viewmodel.CounterViewModel
 
 @Composable
 fun CounterScreen(
     onNavigateToSignIn: () -> Unit,
 ) {
-    val viewModel: BarbarianViewModel = hiltViewModel()
+    val viewModel: CounterViewModel = hiltViewModel()
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -159,7 +157,7 @@ fun CounterScreen(
                     modifier = Modifier
                         .size(width = ovalBoxSize.width, height = ovalBoxSize.height)
                         .clip(OvalCornerShape())
-                        .background(MaterialTheme.colorScheme.onPrimary),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
