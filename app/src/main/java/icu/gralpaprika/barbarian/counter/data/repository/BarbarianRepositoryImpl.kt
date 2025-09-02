@@ -1,13 +1,20 @@
 package icu.gralpaprika.barbarian.counter.data.repository
 
 import android.util.Log
+import icu.gralpaprika.barbarian.counter.data.cloud.FirebaseDataSource
 import icu.gralpaprika.barbarian.counter.data.database.dao.BarbarianActDao
 import icu.gralpaprika.barbarian.counter.data.database.dao.BarbarianLevelDao
+import icu.gralpaprika.barbarian.counter.data.database.model.Apology
+import icu.gralpaprika.barbarian.counter.data.cloud.model.Apology as CloudApology
 import icu.gralpaprika.barbarian.counter.data.database.model.BarbarianAct
+import icu.gralpaprika.barbarian.counter.data.cloud.model.BarbarianAct as CloudBarbarianAct
 import icu.gralpaprika.barbarian.counter.data.database.model.BarbarianLevel
+import icu.gralpaprika.barbarian.counter.data.cloud.model.BarbarianLevel as CloudBarbarianLevel
+import icu.gralpaprika.barbarian.counter.domain.mapper.Mapper
 import icu.gralpaprika.barbarian.counter.domain.model.ActsType
 import icu.gralpaprika.barbarian.counter.domain.repository.BarbarianRepository
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +22,10 @@ import javax.inject.Singleton
 class BarbarianRepositoryImpl @Inject constructor(
     private val barbarianActDao: BarbarianActDao,
     private val barbarianLevelDao: BarbarianLevelDao,
+    private val firebaseDataSource: FirebaseDataSource,
+    private val actMapper: Mapper<BarbarianAct, CloudBarbarianAct>,
+    private val apologyMapper: Mapper<Apology, CloudApology>,
+    private val levelMapper: Mapper<BarbarianLevel, CloudBarbarianLevel>,
 ) : BarbarianRepository {
 
     override val maxBarbarianLevel = 10
@@ -58,6 +69,10 @@ class BarbarianRepositoryImpl @Inject constructor(
             Log.e(TAG, "Error getting barbarian level", e)
             0
         }
+    }
+
+    override suspend fun sync() {
+        TODO("Not yet implemented")
     }
 
     companion object {

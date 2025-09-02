@@ -10,4 +10,3 @@ class SignUpUseCase @Inject constructor(
         return authRepository.signUpWithEmail(email, password)
     }
 }
-

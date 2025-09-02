@@ -5,6 +5,7 @@ interface BarbarianRepository {
     suspend fun decreaseBarbarianLevel()
     suspend fun increaseAndResetBarbarianLevel()
     suspend fun getCurrentBarbarianLevel(): Int
+    suspend fun sync()
     val maxBarbarianLevel: Int
     val minBarbarianLevel: Int
 }
