@@ -7,6 +7,7 @@ import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.Count
 import icu.gralpaprika.barbarian.counter.domain.usecase.DecreaseBarbarianLevelUseCase
 import icu.gralpaprika.barbarian.counter.domain.usecase.GetBarbarianLevelUseCase
 import icu.gralpaprika.barbarian.counter.domain.usecase.IncreaseBarbarianLevelUseCase
+import icu.gralpaprika.barbarian.counter.domain.usecase.SyncBarbarianDataUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class CounterViewModel @Inject constructor(
     private val getBarbarianLevelUseCase: GetBarbarianLevelUseCase,
     private val increaseBarbarianLevelUseCase: IncreaseBarbarianLevelUseCase,
-    private val decreaseBarbarianLevelUseCase: DecreaseBarbarianLevelUseCase
+    private val decreaseBarbarianLevelUseCase: DecreaseBarbarianLevelUseCase,
+    private val syncBarbarianDataUseCase: SyncBarbarianDataUseCase,
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(CounterScreenState())
@@ -25,6 +27,9 @@ class CounterViewModel @Inject constructor(
     
     init {
         loadInitialState()
+        viewModelScope.launch {
+            syncBarbarianDataUseCase()
+        }
     }
     
     private fun loadInitialState() {

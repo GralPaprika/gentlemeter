@@ -9,18 +9,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BarbarianLevelDao {
-    @Query("SELECT * FROM barbarian_level WHERE id = 1")
+    @Query("SELECT * FROM barbarian_level")
     fun getBarbarianLevel(): Flow<BarbarianLevel?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateBarbarianLevel(level: BarbarianLevel)
 
-    @Query("UPDATE barbarian_level SET level = level + 1 WHERE id = 1")
-    suspend fun incrementLevel()
+    @Query("UPDATE barbarian_level SET level = level + 1 WHERE id = :id")
+    suspend fun incrementLevel(id: String)
 
-    @Query("UPDATE barbarian_level SET level = max(0, level - 1) WHERE id = 1")
-    suspend fun decrementLevel()
+    @Query("UPDATE barbarian_level SET level = max(0, level - 1) WHERE id = :id")
+    suspend fun decrementLevel(id: String)
 
-    @Query("UPDATE barbarian_level SET level = 0 WHERE id = 1")
-    suspend fun resetLevel()
+    @Query("UPDATE barbarian_level SET level = 0 WHERE id = :id")
+    suspend fun resetLevel(id: String)
 }

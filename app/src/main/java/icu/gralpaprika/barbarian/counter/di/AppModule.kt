@@ -11,6 +11,8 @@ import icu.gralpaprika.barbarian.counter.data.database.BarbarianDatabase
 import icu.gralpaprika.barbarian.counter.data.database.dao.ApologyDao
 import icu.gralpaprika.barbarian.counter.data.database.dao.BarbarianActDao
 import icu.gralpaprika.barbarian.counter.data.database.dao.BarbarianLevelDao
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -37,4 +39,7 @@ object AppModule {
     @Provides
     fun provideApologyDao(database: BarbarianDatabase): ApologyDao =
         database.apologyDao()
+
+    @Provides
+    fun provideDispatcher(): CoroutineDispatcher = Dispatchers.IO
 }

@@ -1,5 +1,6 @@
 package icu.gralpaprika.barbarian.counter.di
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -17,6 +18,9 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseDataSource(firestore: FirebaseFirestore): FirebaseDataSource = FirebaseDataSource(firestore)
+    fun provideFirebaseDataSource(
+        firebaseAuth: FirebaseAuth,
+        firestore: FirebaseFirestore
+    ): FirebaseDataSource = FirebaseDataSource(firebaseAuth, firestore)
 }
 
