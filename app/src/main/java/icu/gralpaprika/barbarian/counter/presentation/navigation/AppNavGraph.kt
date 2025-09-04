@@ -2,6 +2,7 @@ package icu.gralpaprika.barbarian.counter.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.CounterScreen
@@ -23,7 +24,9 @@ fun AppNavGraph(navController: NavHostController, startDestination: Destination)
         composable<Destination.SignIn> {
             SignInScreen(
                 onSignInSuccess = {
-                    navController.popBackStack()
+                    navController.navigate(route = Destination.Counter) {
+                        popUpTo(Destination.Counter)
+                    }
                 }
             )
         }

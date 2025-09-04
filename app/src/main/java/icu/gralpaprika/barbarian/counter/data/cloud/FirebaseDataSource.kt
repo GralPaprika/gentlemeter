@@ -12,7 +12,8 @@ class FirebaseDataSource @Inject constructor(
     firebaseAuth: FirebaseAuth,
     firestore: FirebaseFirestore
 ) {
-    private val userId = firebaseAuth.currentUser?.uid ?: ""
+    private val userId = firebaseAuth.currentUser?.uid
+        ?: throw IllegalStateException(AUTH_ERROR)
     private val db = firestore.collection(USER_COLLECTION)
 
     suspend fun setBarbarianLevel(level: LevelDocument) {
@@ -60,5 +61,6 @@ class FirebaseDataSource @Inject constructor(
         private const val BARBARIAN_ACTS_COLLECTION = "acts"
         private const val APOLOGIES_COLLECTION = "apologies"
         private const val DEFAULT_LEVEL_DOCUMENT_ID = "0" // Document references must have an even number of segments
+        private const val AUTH_ERROR = "User must be authenticated"
     }
 }

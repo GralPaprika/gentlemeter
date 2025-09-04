@@ -13,4 +13,7 @@ interface BarbarianActDao {
 
     @Query("SELECT * FROM barbarian_acts WHERE synced = 0")
     suspend fun getAllNotSynced(): List<BarbarianAct>
+
+    @Query("UPDATE barbarian_acts SET synced = 1 WHERE id = :id")
+    suspend fun markAsSynced(id: String)
 }

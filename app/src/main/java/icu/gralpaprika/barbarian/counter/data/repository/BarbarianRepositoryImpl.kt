@@ -33,8 +33,8 @@ class BarbarianRepositoryImpl @Inject constructor(
 
     override suspend fun increaseBarbarianLevel() {
         try {
-            actDao.insert(BarbarianAct(type = ActsType.Barbarian.value))
-            level?.let { levelDao.incrementLevel(it.id) }
+            saveAct(BarbarianAct(type = ActsType.Barbarian.value))
+            level?.let { updateLevel(it.copy(level = it.level + 1, synced = false)) }
         } catch (e: Exception) {
             Log.e(TAG, "Error increasing barbarian level", e)
         }
@@ -42,8 +42,15 @@ class BarbarianRepositoryImpl @Inject constructor(
 
     override suspend fun decreaseBarbarianLevel() {
         try {
-            actDao.insert(BarbarianAct(type = ActsType.Gentleman.value))
-            level?.let { levelDao.decrementLevel(it.id) }
+            saveAct(BarbarianAct(type = ActsType.Gentleman.value))
+            level?.let {
+                updateLevel(
+                    it.copy(
+                        level = (it.level - 1).coerceAtLeast(0),
+                        synced = false
+                    )
+                )
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error decreasing barbarian level", e)
         }
@@ -51,8 +58,8 @@ class BarbarianRepositoryImpl @Inject constructor(
 
     override suspend fun increaseAndResetBarbarianLevel() {
         try {
-            actDao.insert(BarbarianAct(type = ActsType.Barbarian.value))
-            level?.let { levelDao.resetLevel(it.id) }
+            saveAct(BarbarianAct(type = ActsType.Barbarian.value))
+            level?.let { updateLevel(it.copy(level = 0, synced = false)) }
         } catch (e: Exception) {
             Log.e(TAG, "Error resetting barbarian level", e)
         }
@@ -72,24 +79,49 @@ class BarbarianRepositoryImpl @Inject constructor(
     }
 
     override suspend fun sync() {
-        firebaseDataSource.getBarbarianLevel()?.let {
-            toBarbarianLevelMapper.map(it).let { level ->
-                levelDao.updateBarbarianLevel(level)
-                this.level = level
+        try {
+            firebaseDataSource.getBarbarianLevel()?.let {
+                toBarbarianLevelMapper.map(it).let { level ->
+                    levelDao.updateBarbarianLevel(level)
+                    this.level = level
+                }
+            } ?: run {
+                levelDao.getBarbarianLevel().firstOrNull()?.let {
+                    firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(it))
+                    levelDao.updateBarbarianLevel(it.copy(synced = true))
+                }
             }
-        } ?: run {
-            levelDao.getBarbarianLevel().firstOrNull()?.let {
-                firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(it))
-                levelDao.updateBarbarianLevel(it.copy(synced = true))
+
+            firebaseDataSource.getAllActs().forEach {
+                actDao.insert(toBarbarianActMapper.map(it))
             }
-        }
 
-        firebaseDataSource.getAllActs().forEach {
-            actDao.insert(toBarbarianActMapper.map(it))
+            actDao.getAllNotSynced().forEach {
+                firebaseDataSource.saveAct(toActDocumentMapper.map(it))
+            }
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Error syncing barbarian level: ${e.message}", e)
         }
+    }
 
-        actDao.getAllNotSynced().forEach {
-            firebaseDataSource.saveAct(toActDocumentMapper.map(it))
+    private suspend fun saveAct(act: BarbarianAct) {
+        actDao.insert(act)
+        try {
+            firebaseDataSource.saveAct(toActDocumentMapper.map(act))
+            actDao.markAsSynced(act.id)
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Error saving on the cloud: ${e.message}", e)
+        }
+    }
+
+    private suspend fun updateLevel(level: BarbarianLevel) {
+        levelDao.updateBarbarianLevel(level)
+        try {
+            firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(level))
+            levelDao.updateBarbarianLevel(level.copy(synced = true))
+            this.level = level
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Error saving level on the cloud: ${e.message}", e)
         }
     }
 

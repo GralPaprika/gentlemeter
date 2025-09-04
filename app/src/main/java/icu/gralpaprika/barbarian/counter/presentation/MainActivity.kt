@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import icu.gralpaprika.barbarian.counter.presentation.navigation.AppNavGraph
 import icu.gralpaprika.barbarian.counter.presentation.navigation.Destination
+import icu.gralpaprika.barbarian.counter.presentation.signin.model.SignInState
 import icu.gralpaprika.barbarian.counter.presentation.signin.viewmodel.SignInViewModel
 import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 
@@ -39,8 +40,8 @@ class MainActivity : ComponentActivity() {
 fun MainApp() {
     val navController = rememberNavController()
     val signInViewModel: SignInViewModel = hiltViewModel()
-    val isSignedIn by signInViewModel.isSignedIn.collectAsState()
-    val startDestination = if (isSignedIn) Destination.Counter else Destination.SignIn
+    val signInState by signInViewModel.state.collectAsState()
+    val startDestination = if (signInState == SignInState.Success) Destination.Counter else Destination.SignIn
 //    val startDestination = Destination.Counter // For easier testing during development
     AppNavGraph(navController = navController, startDestination = startDestination)
 }

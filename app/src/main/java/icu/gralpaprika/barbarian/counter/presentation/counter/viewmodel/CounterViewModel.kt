@@ -22,18 +22,12 @@ class CounterViewModel @Inject constructor(
     private val syncBarbarianDataUseCase: SyncBarbarianDataUseCase,
 ) : ViewModel() {
     
-    private val _uiState = MutableStateFlow(CounterScreenState())
+    private val _uiState = MutableStateFlow<CounterScreenState>(CounterScreenState.Loading)
     val uiState: StateFlow<CounterScreenState> = _uiState.asStateFlow()
     
     init {
-        loadInitialState()
         viewModelScope.launch {
             syncBarbarianDataUseCase()
-        }
-    }
-    
-    private fun loadInitialState() {
-        viewModelScope.launch {
             updateBarbarianState(getBarbarianLevelUseCase())
         }
     }
@@ -53,6 +47,6 @@ class CounterViewModel @Inject constructor(
     }
 
     private fun updateBarbarianState(level: Int) {
-        _uiState.value = CounterScreenState(barbarianLevel = level)
+        _uiState.value = CounterScreenState.Content(barbarianLevel = level)
     }
 }

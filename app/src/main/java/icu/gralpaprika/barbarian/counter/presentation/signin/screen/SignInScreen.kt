@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import icu.gralpaprika.barbarian.counter.presentation.signin.viewmodel.SignInState
+import icu.gralpaprika.barbarian.counter.presentation.signin.model.SignInState
 import icu.gralpaprika.barbarian.counter.presentation.signin.viewmodel.SignInViewModel
 
 @Composable
@@ -33,12 +33,11 @@ fun SignInScreen(
 ) {
     val viewModel: SignInViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-    val isSignedIn by viewModel.isSignedIn.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     // If already signed in, trigger success
-    if (isSignedIn) {
+    if (state is SignInState.Success) {
         LaunchedEffect(Unit) { onSignInSuccess() }
     }
 
@@ -53,6 +52,7 @@ fun SignInScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = email,
+                singleLine = true,
                 onValueChange = { email = it },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
@@ -60,6 +60,7 @@ fun SignInScreen(
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = password,
+                singleLine = true,
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),

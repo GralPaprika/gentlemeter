@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import icu.gralpaprika.barbarian.counter.R
+import icu.gralpaprika.barbarian.counter.presentation.components.LoadingScreen
+import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.OvalShapeSize
 import icu.gralpaprika.barbarian.counter.presentation.counter.util.BarbarianImageUtil
 import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
@@ -51,24 +53,42 @@ fun CounterScreen(
     onNavigateToSignIn: () -> Unit,
 ) {
     val viewModel: CounterViewModel = hiltViewModel()
-
     val uiState by viewModel.uiState.collectAsState()
 
+    when (uiState) {
+        is CounterScreenState.Content -> CounterScreenContent(
+            barbarianLevel = (uiState as CounterScreenState.Content).barbarianLevel,
+            onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() },
+            onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
+            onNavigateToSignIn = onNavigateToSignIn,
+        )
+        CounterScreenState.Loading -> LoadingScreen()
+        else -> { /* TODO: Handle other states if needed */ }
+    }
+}
+
+@Composable
+fun CounterScreenContent(
+    barbarianLevel: Int,
+    onBarbarianButtonClicked: () -> Unit,
+    onGentlemanButtonClicked: () -> Unit,
+    onNavigateToSignIn: () -> Unit,
+) {
     val screenSize = LocalWindowInfo.current.containerSize
     val screenHeight = screenSize.height
     val screenWidth = screenSize.width
 
     var showLevelUp by remember { mutableStateOf(false) }
     var showModal by remember { mutableStateOf(false) }
-
+    
     val ovalBoxSize = when {
         screenHeight < 600 -> OvalShapeSize(width = 200.dp, height = 300.dp)
         screenHeight < 800 -> OvalShapeSize(width = 250.dp, height = 350.dp)
         else -> OvalShapeSize(width = 300.dp, height = 400.dp)
     }
 
-    LaunchedEffect(uiState.barbarianLevel) {
-        if (uiState.barbarianLevel == MAX_BARBARIAN_LEVEL) {
+    LaunchedEffect(barbarianLevel) {
+        if (barbarianLevel == MAX_BARBARIAN_LEVEL) {
             showLevelUp = true
         }
     }
@@ -86,7 +106,7 @@ fun CounterScreen(
                 .align(Alignment.TopEnd),
             horizontalAlignment = Alignment.End
         ) {
-            if (uiState.barbarianLevel > MIN_BARBARIAN_LEVEL) {
+            if (barbarianLevel > MIN_BARBARIAN_LEVEL) {
                 IconButton(
                     onClick = { showModal = true },
                     modifier = Modifier
@@ -101,16 +121,6 @@ fun CounterScreen(
                         contentScale = ContentScale.FillBounds
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            Button(
-                onClick = { onNavigateToSignIn() },
-                modifier = Modifier.size(48.dp),
-                shape = CircleShape,
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-            ) {
-                Text("Sign in")
             }
         }
 
@@ -118,12 +128,12 @@ fun CounterScreen(
             showModal = showModal,
             onDismiss = { showModal = false },
             onConfirm = {
-                viewModel.onGentlemanButtonClicked()
+                onGentlemanButtonClicked()
                 showModal = false
             },
         )
 
-        if (uiState.barbarianLevel < MAX_BARBARIAN_LEVEL) {
+        if (barbarianLevel < MAX_BARBARIAN_LEVEL) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -134,7 +144,7 @@ fun CounterScreen(
                 Text(
                     text = stringResource(
                         R.string.barbarian_acts_counter,
-                        uiState.barbarianLevel
+                        barbarianLevel
                     ),
                     fontSize = 55.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -162,7 +172,7 @@ fun CounterScreen(
                 ) {
                     Image(
                         painter = painterResource(
-                            id = BarbarianImageUtil.getImageForBarbarianLevel(uiState.barbarianLevel)
+                            id = BarbarianImageUtil.getImageForBarbarianLevel(barbarianLevel)
                         ),
                         contentDescription = stringResource(R.string.gentleman_image_description),
                         modifier = Modifier
@@ -173,7 +183,7 @@ fun CounterScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
-                    onClick = { viewModel.onBarbarianButtonClicked() },
+                    onClick = { onBarbarianButtonClicked() },
                     modifier = Modifier.fillMaxWidth(0.8f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -194,7 +204,7 @@ fun CounterScreen(
         LevelUpOverlay(
             visible = showLevelUp,
             imageSize = ovalBoxSize.height,
-            onButtonClicked = { viewModel.onBarbarianButtonClicked() },
+            onButtonClicked = { onBarbarianButtonClicked() },
             onDismissed = { showLevelUp = false },
         )
     }
