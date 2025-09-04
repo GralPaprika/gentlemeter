@@ -15,11 +15,7 @@ fun AppNavGraph(navController: NavHostController, startDestination: Destination)
         startDestination = startDestination
     ) {
         composable<Destination.Counter> {
-            CounterScreen(
-                onNavigateToSignIn = {
-                    navController.navigate(route = Destination.SignIn)
-                }
-            )
+            CounterScreen()
         }
         composable<Destination.SignIn> {
             SignInScreen(

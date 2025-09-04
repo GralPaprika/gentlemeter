@@ -14,6 +14,9 @@ android {
     namespace = "icu.gralpaprika.barbarian.counter"
     compileSdk = 36
 
+    val barbarianMinLevel: String by project
+    val barbarianMaxLevel: String by project
+
     defaultConfig {
         applicationId = "icu.gralpaprika.barbarian.counter"
         minSdk = 24
@@ -22,6 +25,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("int", "BARBARIAN_MIN_LEVEL", barbarianMinLevel)
+        buildConfigField("int", "BARBARIAN_MAX_LEVEL", barbarianMaxLevel)
     }
 
     buildTypes {
@@ -45,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()

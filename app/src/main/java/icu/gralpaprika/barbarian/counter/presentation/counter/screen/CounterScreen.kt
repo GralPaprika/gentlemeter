@@ -5,13 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -35,23 +35,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import icu.gralpaprika.barbarian.counter.BuildConfig
 import icu.gralpaprika.barbarian.counter.R
 import icu.gralpaprika.barbarian.counter.presentation.components.LoadingScreen
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.OvalShapeSize
 import icu.gralpaprika.barbarian.counter.presentation.counter.util.BarbarianImageUtil
+import icu.gralpaprika.barbarian.counter.presentation.counter.viewmodel.CounterViewModel
 import icu.gralpaprika.barbarian.counter.presentation.shapes.OvalCornerShape
+import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
-import icu.gralpaprika.barbarian.counter.presentation.counter.viewmodel.CounterViewModel
+
+private const val minBarbarianLevel = BuildConfig.BARBARIAN_MIN_LEVEL
+private const val maxBarbarianLevel = BuildConfig.BARBARIAN_MAX_LEVEL
 
 @Composable
-fun CounterScreen(
-    onNavigateToSignIn: () -> Unit,
-) {
+fun CounterScreen() {
     val viewModel: CounterViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
@@ -60,10 +64,8 @@ fun CounterScreen(
             barbarianLevel = (uiState as CounterScreenState.Content).barbarianLevel,
             onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() },
             onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
-            onNavigateToSignIn = onNavigateToSignIn,
         )
         CounterScreenState.Loading -> LoadingScreen()
-        else -> { /* TODO: Handle other states if needed */ }
     }
 }
 
@@ -72,7 +74,6 @@ fun CounterScreenContent(
     barbarianLevel: Int,
     onBarbarianButtonClicked: () -> Unit,
     onGentlemanButtonClicked: () -> Unit,
-    onNavigateToSignIn: () -> Unit,
 ) {
     val screenSize = LocalWindowInfo.current.containerSize
     val screenHeight = screenSize.height
@@ -88,7 +89,7 @@ fun CounterScreenContent(
     }
 
     LaunchedEffect(barbarianLevel) {
-        if (barbarianLevel == MAX_BARBARIAN_LEVEL) {
+        if (barbarianLevel == maxBarbarianLevel) {
             showLevelUp = true
         }
     }
@@ -98,15 +99,19 @@ fun CounterScreenContent(
         else -> 16.dp
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Top right area with vertical arrangement
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopEnd),
             horizontalAlignment = Alignment.End
         ) {
-            if (barbarianLevel > MIN_BARBARIAN_LEVEL) {
+            if (barbarianLevel > minBarbarianLevel) {
                 IconButton(
                     onClick = { showModal = true },
                     modifier = Modifier
@@ -133,7 +138,7 @@ fun CounterScreenContent(
             },
         )
 
-        if (barbarianLevel < MAX_BARBARIAN_LEVEL) {
+        if (barbarianLevel < maxBarbarianLevel) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -234,5 +239,14 @@ fun ConfirmDialog(showModal: Boolean, onConfirm: () -> Unit, onDismiss: () -> Un
     }
 }
 
-private const val MIN_BARBARIAN_LEVEL = 0
-private const val MAX_BARBARIAN_LEVEL = 10
+@Preview(showBackground = true)
+@Composable
+fun CounterScreenContentPreview() {
+    BarbarianCounterTheme(darkTheme = true) {
+        CounterScreenContent(
+            barbarianLevel = 3,
+            onGentlemanButtonClicked = {},
+            onBarbarianButtonClicked = {}
+        )
+    }
+}

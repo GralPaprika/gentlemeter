@@ -11,6 +11,7 @@ import icu.gralpaprika.barbarian.counter.data.database.model.BarbarianLevel
 import icu.gralpaprika.barbarian.counter.domain.mapper.Mapper
 import icu.gralpaprika.barbarian.counter.domain.model.ActsType
 import icu.gralpaprika.barbarian.counter.domain.repository.BarbarianRepository
+import icu.gralpaprika.barbarian.counter.BuildConfig
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,16 +26,19 @@ class BarbarianRepositoryImpl @Inject constructor(
     private val toBarbarianActMapper: Mapper<ActDocument, BarbarianAct>,
     private val toBarbarianLevelMapper: Mapper<LevelDocument, BarbarianLevel>,
 ) : BarbarianRepository {
-    override val maxBarbarianLevel = 10
+    private val minBarbarianLevel = BuildConfig.BARBARIAN_MIN_LEVEL
 
-    override val minBarbarianLevel = 0
-
-    private var level: BarbarianLevel? = null
+    private suspend fun getLatestLevel(): BarbarianLevel {
+        return levelDao.getBarbarianLevel().firstOrNull() ?:
+            BarbarianLevel(level = minBarbarianLevel)
+    }
 
     override suspend fun increaseBarbarianLevel() {
         try {
             saveAct(BarbarianAct(type = ActsType.Barbarian.value))
-            level?.let { updateLevel(it.copy(level = it.level + 1, synced = false)) }
+            getLatestLevel().let {
+                updateLevel(it.copy(level = it.level + 1, synced = false))
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error increasing barbarian level", e)
         }
@@ -43,13 +47,11 @@ class BarbarianRepositoryImpl @Inject constructor(
     override suspend fun decreaseBarbarianLevel() {
         try {
             saveAct(BarbarianAct(type = ActsType.Gentleman.value))
-            level?.let {
-                updateLevel(
-                    it.copy(
-                        level = (it.level - 1).coerceAtLeast(0),
-                        synced = false
-                    )
-                )
+            getLatestLevel().let {
+                updateLevel(it.copy(
+                    level = (it.level - 1).coerceAtLeast(minBarbarianLevel),
+                    synced = false
+                ))
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error decreasing barbarian level", e)
@@ -59,7 +61,7 @@ class BarbarianRepositoryImpl @Inject constructor(
     override suspend fun increaseAndResetBarbarianLevel() {
         try {
             saveAct(BarbarianAct(type = ActsType.Barbarian.value))
-            level?.let { updateLevel(it.copy(level = 0, synced = false)) }
+            updateLevel(getLatestLevel().copy(level = minBarbarianLevel, synced = false))
         } catch (e: Exception) {
             Log.e(TAG, "Error resetting barbarian level", e)
         }
@@ -68,13 +70,12 @@ class BarbarianRepositoryImpl @Inject constructor(
     override suspend fun getCurrentBarbarianLevel(): Int {
         return try {
             levelDao.getBarbarianLevel().firstOrNull()?.level ?: run {
-                levelDao.updateBarbarianLevel(BarbarianLevel(level = 0))
-                level = levelDao.getBarbarianLevel().firstOrNull()
-                0
+                levelDao.updateBarbarianLevel(BarbarianLevel(level = minBarbarianLevel))
+                minBarbarianLevel
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error getting barbarian level", e)
-            0
+            minBarbarianLevel
         }
     }
 
@@ -83,7 +84,6 @@ class BarbarianRepositoryImpl @Inject constructor(
             firebaseDataSource.getBarbarianLevel()?.let {
                 toBarbarianLevelMapper.map(it).let { level ->
                     levelDao.updateBarbarianLevel(level)
-                    this.level = level
                 }
             } ?: run {
                 levelDao.getBarbarianLevel().firstOrNull()?.let {
@@ -119,7 +119,6 @@ class BarbarianRepositoryImpl @Inject constructor(
         try {
             firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(level))
             levelDao.updateBarbarianLevel(level.copy(synced = true))
-            this.level = level
         } catch (e: IllegalStateException) {
             Log.e(TAG, "Error saving level on the cloud: ${e.message}", e)
         }
