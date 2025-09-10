@@ -12,6 +12,7 @@ import icu.gralpaprika.barbarian.counter.domain.mapper.Mapper
 import icu.gralpaprika.barbarian.counter.domain.model.ActsType
 import icu.gralpaprika.barbarian.counter.domain.repository.BarbarianRepository
 import icu.gralpaprika.barbarian.counter.BuildConfig
+import icu.gralpaprika.barbarian.counter.domain.model.SyncResult
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,103 +29,91 @@ class BarbarianRepositoryImpl @Inject constructor(
 ) : BarbarianRepository {
     private val minBarbarianLevel = BuildConfig.BARBARIAN_MIN_LEVEL
 
-    private suspend fun getLatestLevel(): BarbarianLevel {
-        return levelDao.getBarbarianLevel().firstOrNull() ?:
-            BarbarianLevel(level = minBarbarianLevel)
-    }
-
     override suspend fun increaseBarbarianLevel() {
-        try {
-            saveAct(BarbarianAct(type = ActsType.Barbarian.value))
-            getLatestLevel().let {
-                updateLevel(it.copy(level = it.level + 1, synced = false))
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error increasing barbarian level", e)
-        }
+        changeBarbarianLevel(
+            actType = ActsType.Barbarian,
+            newLevel = getLatestLevel().level + 1,
+            errorMsg = "Error increasing barbarian level",
+        )
     }
 
     override suspend fun decreaseBarbarianLevel() {
-        try {
-            saveAct(BarbarianAct(type = ActsType.Gentleman.value))
-            getLatestLevel().let {
-                updateLevel(it.copy(
-                    level = (it.level - 1).coerceAtLeast(minBarbarianLevel),
-                    synced = false
-                ))
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error decreasing barbarian level", e)
-        }
+        changeBarbarianLevel(
+            actType = ActsType.Gentleman,
+            newLevel = (getLatestLevel().level - 1).coerceAtLeast(minBarbarianLevel),
+            errorMsg = "Error decreasing barbarian level",
+        )
     }
 
     override suspend fun increaseAndResetBarbarianLevel() {
-        try {
-            saveAct(BarbarianAct(type = ActsType.Barbarian.value))
-            updateLevel(getLatestLevel().copy(level = minBarbarianLevel, synced = false))
-        } catch (e: Exception) {
-            Log.e(TAG, "Error resetting barbarian level", e)
-        }
+        changeBarbarianLevel(
+            actType = ActsType.Barbarian,
+            newLevel = minBarbarianLevel,
+            errorMsg = "Error resetting barbarian level"
+        )
     }
 
     override suspend fun getCurrentBarbarianLevel(): Int {
         return try {
-            levelDao.getBarbarianLevel().firstOrNull()?.level ?: run {
-                levelDao.updateBarbarianLevel(BarbarianLevel(level = minBarbarianLevel))
-                minBarbarianLevel
-            }
+            getLatestLevel().level
         } catch (e: Exception) {
             Log.e(TAG, "Error getting barbarian level", e)
             minBarbarianLevel
         }
     }
 
-    override suspend fun sync() {
+    override suspend fun syncToCloud(): SyncResult {
         try {
-            firebaseDataSource.getBarbarianLevel()?.let {
-                toBarbarianLevelMapper.map(it).let { level ->
-                    levelDao.updateBarbarianLevel(level)
-                }
-            } ?: run {
-                levelDao.getBarbarianLevel().firstOrNull()?.let {
-                    firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(it))
-                    levelDao.updateBarbarianLevel(it.copy(synced = true))
-                }
+            actDao.getAllNotSynced().forEach { act ->
+                firebaseDataSource.saveAct(toActDocumentMapper.map(act))
+                actDao.markAsSynced(act.id)
             }
 
+            firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(getLatestLevel()))
+
+            return SyncResult.Success
+        } catch (e: Exception) {
+            Log.e(TAG, SYNC_TO_CLOUD_ERROR, e)
+            return SyncResult.Error(SYNC_TO_CLOUD_ERROR)
+        }
+    }
+
+    override suspend fun syncFromCloud(): SyncResult {
+        try {
             firebaseDataSource.getAllActs().forEach {
                 actDao.insert(toBarbarianActMapper.map(it))
             }
 
-            actDao.getAllNotSynced().forEach {
-                firebaseDataSource.saveAct(toActDocumentMapper.map(it))
+            firebaseDataSource.getBarbarianLevel()?.let {
+                levelDao.updateBarbarianLevel(toBarbarianLevelMapper.map(it).copy(synced = true))
             }
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Error syncing barbarian level: ${e.message}", e)
+
+            return SyncResult.Success
+        } catch (e: Exception) {
+            Log.e(TAG, SYNC_FROM_CLOUD_ERROR, e)
+            return SyncResult.Error(SYNC_FROM_CLOUD_ERROR)
         }
     }
 
-    private suspend fun saveAct(act: BarbarianAct) {
-        actDao.insert(act)
-        try {
-            firebaseDataSource.saveAct(toActDocumentMapper.map(act))
-            actDao.markAsSynced(act.id)
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Error saving on the cloud: ${e.message}", e)
-        }
-    }
+    private suspend fun getLatestLevel(): BarbarianLevel =
+        levelDao.getBarbarianLevel() ?: BarbarianLevel(level = minBarbarianLevel)
 
-    private suspend fun updateLevel(level: BarbarianLevel) {
-        levelDao.updateBarbarianLevel(level)
+    private suspend fun changeBarbarianLevel(
+        actType: ActsType,
+        newLevel: Int,
+        errorMsg: String
+    ) {
         try {
-            firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(level))
-            levelDao.updateBarbarianLevel(level.copy(synced = true))
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Error saving level on the cloud: ${e.message}", e)
+            actDao.insert(BarbarianAct(type = actType.value))
+            levelDao.updateBarbarianLevel(getLatestLevel().copy(level = newLevel, synced = false))
+        } catch (e: Exception) {
+            Log.e(TAG, errorMsg, e)
         }
     }
 
     companion object {
         private const val TAG = "BarbarianRepository"
+        private const val SYNC_TO_CLOUD_ERROR = "Error syncing to cloud"
+        private const val SYNC_FROM_CLOUD_ERROR = "Error syncing from cloud"
     }
 }

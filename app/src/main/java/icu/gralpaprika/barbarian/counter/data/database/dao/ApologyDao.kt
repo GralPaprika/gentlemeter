@@ -12,8 +12,8 @@ interface ApologyDao {
     suspend fun insert(apology: Apology)
 
     @Query("SELECT * FROM apology ORDER BY timestamp DESC")
-    fun getAllApologies(): Flow<List<Apology>>
+    suspend fun getAllApologies(): List<Apology>
 
     @Query("SELECT COUNT(*) FROM apology")
-    fun getApologyCount(): Flow<Int>
+    suspend fun getApologyCount(): Int
 }

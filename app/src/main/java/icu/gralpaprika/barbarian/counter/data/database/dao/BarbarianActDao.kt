@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import icu.gralpaprika.barbarian.counter.data.database.model.BarbarianAct
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BarbarianActDao {

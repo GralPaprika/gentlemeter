@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ApologyRepository {
     suspend fun insertApology(apology: Apology)
-    fun getAllApologies(): Flow<List<Apology>>
-    fun getApologyCount(): Flow<Int>
+    suspend fun getAllApologies(): List<Apology>
+    suspend fun getApologyCount(): Int
 }

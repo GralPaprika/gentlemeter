@@ -17,4 +17,7 @@
     <string name="gentleman_dialog_message">Are you sure THIS guy behave like a gentleman?.</string>
     <string name="gentleman_dialog_confirm">Yes</string>
     <string name="gentleman_dialog_cancel">Nah, still a jerk</string>
+
+    <string name="sync_success">Sync to cloud successful</string>
+    <string name="sync_error">Error syncing to cloud, try again later</string>
 </resources>

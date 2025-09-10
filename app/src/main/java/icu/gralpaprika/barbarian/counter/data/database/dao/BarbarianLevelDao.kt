@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BarbarianLevelDao {
     @Query("SELECT * FROM barbarian_level")
-    fun getBarbarianLevel(): Flow<BarbarianLevel?>
+    suspend fun getBarbarianLevel(): BarbarianLevel?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateBarbarianLevel(level: BarbarianLevel)

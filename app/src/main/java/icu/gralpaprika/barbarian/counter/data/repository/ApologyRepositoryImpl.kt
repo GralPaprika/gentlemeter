@@ -13,11 +13,11 @@ class ApologyRepositoryImpl @Inject constructor(
         apologyDao.insert(apology)
     }
 
-    override fun getAllApologies(): Flow<List<Apology>> {
+    override suspend fun getAllApologies(): List<Apology> {
         return apologyDao.getAllApologies()
     }
 
-    override fun getApologyCount(): Flow<Int> {
+    override suspend fun getApologyCount(): Int {
         return apologyDao.getApologyCount()
     }
 }
