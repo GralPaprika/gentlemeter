@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class LevelDocument(
     val id: String = "",
     val level: Int = 0,
+    val lastUpdated: Long = 0L,
 )

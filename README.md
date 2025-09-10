@@ -1,49 +1,32 @@
-# BarbarianCounter
+# GentleMeter (name subject to change)
 
-BarbarianCounter is a fun, personal Android application designed to track "ungentlemanly" behavior. The core idea is to gamify the journey towards embracing classic gentlemanly conduct.
+![GitHub stars](https://img.shields.io/github/stars/GralPaprika/gentlemeter?style=social)
 
-**How it Works:**
+A playful Android app built with **Kotlin**, **Jetpack Compose**, **Room**, and **Firebase** to gamify “gentleman behavior.”
 
-*   **Count Infractions:** The app allows you to increment a counter each time an "ungentlemanly" action is observed or performed.
-*   **Reach the Milestone:** Every 10 infractions, the counter automatically resets.
-*   **Log Achievements:** When the counter resets at the 10th mark, the app registers this milestone. This signifies that the person tracking their behavior has reached a point where they are due for a "reward" (as defined by the user).
-*   **Gamified Improvement:** The ultimate goal is to encourage more thoughtful and considerate behavior by making the process of self-improvement engaging and rewarding.
+The app started as a joke: every time I forgot to act like a gentleman (like opening the door for my girlfriend), she said the *“honeymoon was over.”* To keep track, I created GentleMeter — a counter that records each missed gentleman act and turns a polished avatar into a caveman after 10 strikes.
 
-**Purpose:**
+## 🛠 Tech Stack
 
-This app is a personal tool for self-reflection and lighthearted motivation. It aims to bring a playful approach to cultivating "old-school gentleman" values.
+- [Kotlin](https://kotlinlang.org/)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- [Room](https://developer.android.com/training/data-storage/room)
+- [Firebase Authentication](https://firebase.google.com/docs/auth)
+- [Firebase Firestore](https://firebase.google.com/docs/firestore)
+- [Retrofit](https://square.github.io/retrofit/)
 
-**Features (Conceptual - to be implemented/refined):**
+## 🚀 Getting Started
 
-*   Simple interface for incrementing the counter.
-*   Clear visual indication of the current count.
-*   Automatic reset of the counter at 10 infractions.
-*   A log or history of when the 10th mark milestones were achieved.
-*   (Potential Future Feature) Customizable rewards or notifications when a milestone is reached.
-*   (Potential Future Feature) Theming options (Light/Dark mode supported, as seen in `Color.kt`).
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/GralPaprika/gentlemeter.git
+   cd gentlemeter
+   ```
+2. Open in Android Studio.
+3. Add your Firebase configuration files (`google-services.json`).
+4. Run the app on an emulator or device.
 
-**Tech Stack (based on provided dependencies):**
+## 📸 Screenshots
 
-*   **UI:** Jetpack Compose (androidx.compose)
-*   **Architecture:** Likely MVVM with Jetpack ViewModel (androidx.lifecycle)
-*   **Navigation:** Jetpack Navigation Compose (androidx.navigation)
-*   **Dependency Injection:** Hilt (com.google.dagger:hilt-android)
-*   **Asynchronous Operations:** Kotlin Coroutines (org.jetbrains.kotlinx:kotlinx-coroutines-android)
-*   **Data Persistence (Potentially):** Room (androidx.room) for storing milestone data locally.
-*   **Networking (Potentially, if features expand):** Retrofit & OkHttp (com.squareup.retrofit2, com.squareup.okhttp3)
-
-**Project Status:**
-
-This is a personal project currently under development.
-
-**How to Use (Once Released/If Shared):**
-
-1.  Install the Android application.
-2.  Open the app.
-3.  Tap the designated button or area to increment the "ungentlemanly" action counter.
-4.  Observe the counter. When it reaches 10, it will reset, and the milestone will be logged.
-5.  Reflect on your progress and claim your self-defined "reward"!
-
-**Disclaimer:**
-
-This app is intended for personal entertainment and self-improvement. The definition of "ungentlemanly" is subjective and up to the individual user.
+![screenshot_0.png](https://lh3.googleusercontent.com/pw/AP1GczO0dRHNDeIK0_16NhaZIVhc-R0O1hNgDhKOdHuLf9yWeHfOWKnGJCjDL2Ecg_43CA7WAWzCz-iDwWlgxZS4ggh5BtL16QEzp5cKSH9i1v73AtUyp2helMWIdqLO7wf-Md4Df14iEc9p-ID2C_MAZJlEMw=w379-h753-s-no-gm?authuser=0)
+![screenshot_9.png](https://lh3.googleusercontent.com/pw/AP1GczPlXXNfqftZzk_dTms_gcAtRgYjZXyQSX4b3c_H_p41g6K4czo68_N0YbyUiaBhNm8tnho_3gNtJ6cA1vUIfwRuem6fBT6eiiWKAMow-vNzi_qrK4zKNywRzfiMy3N3eiJuwAEa4yR34fcG2PF75oJUMA=w381-h753-s-no-gm?authuser=0)

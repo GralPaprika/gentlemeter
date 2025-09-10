@@ -18,7 +18,6 @@ class SharedViewModel @Inject constructor(
     private val dispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _syncResult = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
-    val syncResult: StateFlow<SyncStatus> = _syncResult
 
     fun syncToCloud() {
         viewModelScope.launch(dispatcher) {
@@ -28,9 +27,5 @@ class SharedViewModel @Inject constructor(
                 is SyncResult.Error -> SyncStatus.Error(result.message)
             }
         }
-    }
-
-    fun resetSyncStatus() {
-        _syncResult.value = SyncStatus.Idle
     }
 }

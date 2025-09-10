@@ -9,4 +9,5 @@ data class BarbarianLevel(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val level: Int = 0,
     val synced: Boolean = false,
+    val lastUpdated: Long = System.currentTimeMillis(),
 )

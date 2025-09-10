@@ -54,10 +54,6 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         sharedViewModel.syncToCloud()
     }
-
-    companion object {
-        const val LONG_DURATION = 3500L
-    }
 }
 
 @Composable
