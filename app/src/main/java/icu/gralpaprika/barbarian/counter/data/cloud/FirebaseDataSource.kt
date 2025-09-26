@@ -13,10 +13,10 @@ class FirebaseDataSource @Inject constructor(
     firestore: FirebaseFirestore
 ) {
     private val userId = firebaseAuth.currentUser?.uid
-        ?: throw IllegalStateException(AUTH_ERROR)
     private val db = firestore.collection(USER_COLLECTION)
 
     suspend fun setBarbarianLevel(level: LevelDocument) {
+        requireNotNull(userId) { AUTH_ERROR }
         db.document(userId)
             .collection(BARBARIAN_LEVEL_COLLECTION)
             .document(DEFAULT_LEVEL_DOCUMENT_ID)
@@ -26,14 +26,17 @@ class FirebaseDataSource @Inject constructor(
 
 
     suspend fun getBarbarianLevel(): LevelDocument? =
-        db.document(userId)
-            .collection(BARBARIAN_LEVEL_COLLECTION)
-            .document(DEFAULT_LEVEL_DOCUMENT_ID)
-            .get()
-            .await()
-            .run { toObject(LevelDocument::class.java) }
+        userId?.let {
+            db.document(it)
+                .collection(BARBARIAN_LEVEL_COLLECTION)
+                .document(DEFAULT_LEVEL_DOCUMENT_ID)
+                .get()
+                .await()
+                .run { toObject(LevelDocument::class.java) }
+        }
 
     suspend fun saveAct(act: ActDocument) {
+        requireNotNull(userId) { AUTH_ERROR }
         db.document(userId)
             .collection(BARBARIAN_ACTS_COLLECTION)
             .document(act.id)
@@ -42,18 +45,22 @@ class FirebaseDataSource @Inject constructor(
     }
 
     suspend fun getAllActs(): List<ActDocument> =
-        db.document(userId)
-            .collection(BARBARIAN_ACTS_COLLECTION)
-            .get()
-            .await()
-            .run { documents.mapNotNull { it.toObject(ActDocument::class.java) } }
+        userId?.let {
+            db.document(userId)
+                .collection(BARBARIAN_ACTS_COLLECTION)
+                .get()
+                .await()
+                .run { documents.mapNotNull { it.toObject(ActDocument::class.java) } }
+        } ?: emptyList()
 
     suspend fun getAllApologies(): List<ApologyDocument> =
-        db.document(userId)
-            .collection(APOLOGIES_COLLECTION)
-            .get()
-            .await()
-            .run { documents.mapNotNull { it.toObject(ApologyDocument::class.java) } }
+        userId?.let {
+            db.document(userId)
+                .collection(APOLOGIES_COLLECTION)
+                .get()
+                .await()
+                .run { documents.mapNotNull { it.toObject(ApologyDocument::class.java) } }
+        } ?: emptyList()
 
     companion object {
         private const val USER_COLLECTION = "user"

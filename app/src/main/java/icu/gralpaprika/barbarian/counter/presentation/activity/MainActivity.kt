@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        sharedViewModel.syncToCloud()
+        sharedViewModel.syncData()
     }
 }
 

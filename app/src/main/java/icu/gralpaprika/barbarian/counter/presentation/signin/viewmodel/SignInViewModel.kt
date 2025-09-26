@@ -31,7 +31,7 @@ class SignInViewModel @Inject constructor(
     }
 
     private fun isUserSignedIn() =
-        if (isUserSignedInUseCase.execute()) {
+        if (isUserSignedInUseCase()) {
             SignInState.Success
         } else {
             SignInState.Idle

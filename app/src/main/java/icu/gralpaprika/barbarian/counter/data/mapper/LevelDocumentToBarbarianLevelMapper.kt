@@ -10,6 +10,7 @@ class LevelDocumentToBarbarianLevelMapper: Mapper<LevelDocument, BarbarianLevel>
             id = objectToMap.id,
             level = objectToMap.level,
             synced = true,
+            lastUpdated = objectToMap.lastUpdated,
         )
     }
 }

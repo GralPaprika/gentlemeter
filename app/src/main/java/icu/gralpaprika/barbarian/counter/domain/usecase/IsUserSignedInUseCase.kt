@@ -6,6 +6,6 @@ import javax.inject.Inject
 class IsUserSignedInUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    fun execute(): Boolean = authRepository.isUserSignedIn()
+    operator fun invoke(): Boolean = authRepository.isUserSignedIn()
 }
 

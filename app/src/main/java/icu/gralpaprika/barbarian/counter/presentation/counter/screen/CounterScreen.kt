@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import icu.gralpaprika.barbarian.counter.BuildConfig
 import icu.gralpaprika.barbarian.counter.R
+import icu.gralpaprika.barbarian.counter.presentation.activity.viewmodel.SharedViewModel
 import icu.gralpaprika.barbarian.counter.presentation.components.LoadingScreen
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.OvalShapeSize
@@ -60,7 +61,12 @@ private const val maxBarbarianLevel = BuildConfig.BARBARIAN_MAX_LEVEL
 @Composable
 fun CounterScreen() {
     val viewModel: CounterViewModel = hiltViewModel()
+    val sharedViewModel: SharedViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        sharedViewModel.syncData()
+    }
 
     when (uiState) {
         is CounterScreenState.Content -> CounterScreenContent(

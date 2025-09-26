@@ -7,6 +7,5 @@ interface BarbarianRepository {
     suspend fun decreaseBarbarianLevel()
     suspend fun increaseAndResetBarbarianLevel()
     suspend fun getCurrentBarbarianLevel(): Int
-    suspend fun syncToCloud(): SyncResult
-    suspend fun syncFromCloud(): SyncResult
+    suspend fun syncData(): SyncResult
 }

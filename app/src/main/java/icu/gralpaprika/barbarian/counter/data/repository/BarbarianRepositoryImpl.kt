@@ -62,7 +62,40 @@ class BarbarianRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun syncToCloud(): SyncResult {
+    override suspend fun syncData(): SyncResult {
+        val remoteLastUpdate = firebaseDataSource.getBarbarianLevel()?.lastUpdated
+        val localLastUpdate = getLatestLevel().lastUpdated
+
+        if (remoteLastUpdate == null || localLastUpdate > remoteLastUpdate) {
+            return syncToCloud()
+        } else if (localLastUpdate < remoteLastUpdate) {
+            return syncFromCloud()
+        }
+
+        return SyncResult.Success
+    }
+
+    private suspend fun getLatestLevel(): BarbarianLevel =
+        levelDao.getBarbarianLevel() ?: BarbarianLevel(level = minBarbarianLevel)
+
+    private suspend fun changeBarbarianLevel(
+        actType: ActsType,
+        newLevel: Int,
+        errorMsg: String
+    ) {
+        try {
+            actDao.insert(BarbarianAct(type = actType.value))
+            levelDao.updateBarbarianLevel(getLatestLevel().copy(
+                level = newLevel,
+                synced = false,
+                lastUpdated = System.currentTimeMillis()
+            ))
+        } catch (e: Exception) {
+            Log.e(TAG, errorMsg, e)
+        }
+    }
+
+    private suspend fun syncToCloud(): SyncResult {
         try {
             actDao.getAllNotSynced().forEach { act ->
                 firebaseDataSource.saveAct(toActDocumentMapper.map(act))
@@ -78,7 +111,7 @@ class BarbarianRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun syncFromCloud(): SyncResult {
+    private suspend fun syncFromCloud(): SyncResult {
         try {
             firebaseDataSource.getAllActs().forEach {
                 actDao.insert(toBarbarianActMapper.map(it))
@@ -92,22 +125,6 @@ class BarbarianRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, SYNC_FROM_CLOUD_ERROR, e)
             return SyncResult.Error(SYNC_FROM_CLOUD_ERROR)
-        }
-    }
-
-    private suspend fun getLatestLevel(): BarbarianLevel =
-        levelDao.getBarbarianLevel() ?: BarbarianLevel(level = minBarbarianLevel)
-
-    private suspend fun changeBarbarianLevel(
-        actType: ActsType,
-        newLevel: Int,
-        errorMsg: String
-    ) {
-        try {
-            actDao.insert(BarbarianAct(type = actType.value))
-            levelDao.updateBarbarianLevel(getLatestLevel().copy(level = newLevel, synced = false))
-        } catch (e: Exception) {
-            Log.e(TAG, errorMsg, e)
         }
     }
 
