@@ -2,7 +2,6 @@
 .idea/
 .idea/*
 *.iml
-.gradle/
 
 # Build outputs
 build/
@@ -42,6 +41,13 @@ output.json
 *.jar
 *.war
 *.ear
+
+# Android specific
+caches/
+daemon/
+kotlin-profile
+native/
+wrapper/
 
 # Misc
 *.swp
@@ -239,12 +245,6 @@ app/build/intermediates/nested_resources_validation_report/
 # Ignore all .vscode files
 .vscode/
 
-# Ignore all .idea files
-.idea/
-
-# Ignore all .iml files
-*.iml
-
 # Ignore all .ipr files
 *.ipr
 
@@ -296,12 +296,6 @@ app/build/intermediates/nested_resources_validation_report/
 # Ignore all .cvs files
 .cvs/
 
-# Ignore all .DS_Store files
-.DS_Store
-
-# Ignore all Thumbs.db files
-Thumbs.db
-
 # Ignore all desktop.ini files
 desktop.ini
 
@@ -346,40 +340,3 @@ Icon?
 
 # Ignore all .dbfseventsd files
 .dbfseventsd
-
-# Ignore all .Spotlight-V100 files
-.Spotlight-V100
-
-# Ignore all .Trashes files
-.Trashes
-
-# Ignore all .fseventsd files
-.fseventsd
-
-# Ignore all .TemporaryItems files
-.TemporaryItems
-
-# Ignore all .apdisk files
-.apdisk
-
-# Ignore all .AppleDouble files
-.AppleDouble
-
-# Ignore all .LSOverride files
-.LSOverride
-
-# Ignore all .DocumentRevisions-V100 files
-.DocumentRevisions-V100
-
-# Ignore all .com.apple.timemachine.donotpresent files
-.com.apple.timemachine.donotpresent
-
-# Ignore all .MobileBackups files
-.MobileBackups
-
-# Ignore all .SyncServices files
-.SyncServices
-
-# Ignore all .dbfseventsd files
-.dbfseventsd
-

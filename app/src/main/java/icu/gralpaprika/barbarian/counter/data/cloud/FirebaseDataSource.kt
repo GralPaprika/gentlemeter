@@ -9,15 +9,16 @@ import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
 
 class FirebaseDataSource @Inject constructor(
-    firebaseAuth: FirebaseAuth,
+    private val firebaseAuth: FirebaseAuth,
     firestore: FirebaseFirestore
 ) {
-    private val userId = firebaseAuth.currentUser?.uid
+    private val userId: String?
+        get() = firebaseAuth.currentUser?.uid
     private val db = firestore.collection(USER_COLLECTION)
 
     suspend fun setBarbarianLevel(level: LevelDocument) {
         requireNotNull(userId) { AUTH_ERROR }
-        db.document(userId)
+        db.document(userId!!)
             .collection(BARBARIAN_LEVEL_COLLECTION)
             .document(DEFAULT_LEVEL_DOCUMENT_ID)
             .set(level)
@@ -37,7 +38,7 @@ class FirebaseDataSource @Inject constructor(
 
     suspend fun saveAct(act: ActDocument) {
         requireNotNull(userId) { AUTH_ERROR }
-        db.document(userId)
+        db.document(userId!!)
             .collection(BARBARIAN_ACTS_COLLECTION)
             .document(act.id)
             .set(act)
@@ -45,8 +46,8 @@ class FirebaseDataSource @Inject constructor(
     }
 
     suspend fun getAllActs(): List<ActDocument> =
-        userId?.let {
-            db.document(userId)
+        userId?.let { id ->
+            db.document(id)
                 .collection(BARBARIAN_ACTS_COLLECTION)
                 .get()
                 .await()
@@ -54,8 +55,8 @@ class FirebaseDataSource @Inject constructor(
         } ?: emptyList()
 
     suspend fun getAllApologies(): List<ApologyDocument> =
-        userId?.let {
-            db.document(userId)
+        userId?.let { id ->
+            db.document(id)
                 .collection(APOLOGIES_COLLECTION)
                 .get()
                 .await()
@@ -67,7 +68,8 @@ class FirebaseDataSource @Inject constructor(
         private const val BARBARIAN_LEVEL_COLLECTION = "level"
         private const val BARBARIAN_ACTS_COLLECTION = "acts"
         private const val APOLOGIES_COLLECTION = "apologies"
-        private const val DEFAULT_LEVEL_DOCUMENT_ID = "0" // Document references must have an even number of segments
+        // Document references must have an even number of segments so we use a constant ID here.
+        private const val DEFAULT_LEVEL_DOCUMENT_ID = "0"
         private const val AUTH_ERROR = "User must be authenticated"
     }
 }
