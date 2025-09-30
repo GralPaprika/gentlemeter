@@ -70,6 +70,7 @@ class BarbarianRepositoryImpl @Inject constructor(
 
     override suspend fun syncToCloud(): SyncResult {
         try {
+            // TODO: Optimize fetching performance.
             actDao.getAllNotSynced().forEach { act ->
                 firebaseDataSource.saveAct(toActDocumentMapper.map(act))
                 actDao.markAsSynced(act.id)
@@ -86,6 +87,7 @@ class BarbarianRepositoryImpl @Inject constructor(
 
     override suspend fun syncFromCloud(): SyncResult {
         try {
+            // TODO: Optimize fetching performance.
             firebaseDataSource.getAllActs().forEach {
                 actDao.insert(toBarbarianActMapper.map(it))
             }
