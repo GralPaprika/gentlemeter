@@ -29,6 +29,12 @@ class BarbarianRepositoryImpl @Inject constructor(
 ) : BarbarianRepository {
     private val minBarbarianLevel = BuildConfig.BARBARIAN_MIN_LEVEL
 
+    override suspend fun getLatestRemoteUpdateDate(): Long? =
+        firebaseDataSource.getBarbarianLevel()?.lastUpdated
+
+    override suspend fun getLatestLocalUpdateDate(): Long =
+        getLatestLevel().lastUpdated
+
     override suspend fun increaseBarbarianLevel() {
         changeBarbarianLevel(
             actType = ActsType.Barbarian,
@@ -62,21 +68,44 @@ class BarbarianRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun syncData(): SyncResult {
-        val remoteLastUpdate = firebaseDataSource.getBarbarianLevel()?.lastUpdated
-        val localLastUpdate = getLatestLevel().lastUpdated
+    override suspend fun syncToCloud(): SyncResult {
+        try {
+            actDao.getAllNotSynced().forEach { act ->
+                firebaseDataSource.saveAct(toActDocumentMapper.map(act))
+                actDao.markAsSynced(act.id)
+            }
 
-        if (remoteLastUpdate == null || localLastUpdate > remoteLastUpdate) {
-            return syncToCloud()
-        } else if (localLastUpdate < remoteLastUpdate) {
-            return syncFromCloud()
+            firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(getLatestLevel()))
+
+            return SyncResult.Success
+        } catch (e: Exception) {
+            Log.e(TAG, SyncResult.ErrorType.SyncToCloudFailed.description, e)
+            return SyncResult.Error(SyncResult.ErrorType.SyncToCloudFailed)
         }
+    }
 
-        return SyncResult.Success
+    override suspend fun syncFromCloud(): SyncResult {
+        try {
+            firebaseDataSource.getAllActs().forEach {
+                actDao.insert(toBarbarianActMapper.map(it))
+            }
+
+            firebaseDataSource.getBarbarianLevel()?.let {
+                levelDao.updateBarbarianLevel(toBarbarianLevelMapper.map(it).copy(synced = true))
+            }
+
+            return SyncResult.Success
+        } catch (e: Exception) {
+            Log.e(TAG, SyncResult.ErrorType.SyncFromCloudFailed.description, e)
+            return SyncResult.Error(SyncResult.ErrorType.SyncFromCloudFailed)
+        }
     }
 
     private suspend fun getLatestLevel(): BarbarianLevel =
-        levelDao.getBarbarianLevel() ?: BarbarianLevel(level = minBarbarianLevel)
+        levelDao.getBarbarianLevel() ?: BarbarianLevel(
+            level = minBarbarianLevel,
+            lastUpdated = DEFAULT_TIMESTAMP,
+        )
 
     private suspend fun changeBarbarianLevel(
         actType: ActsType,
@@ -95,42 +124,8 @@ class BarbarianRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun syncToCloud(): SyncResult {
-        try {
-            actDao.getAllNotSynced().forEach { act ->
-                firebaseDataSource.saveAct(toActDocumentMapper.map(act))
-                actDao.markAsSynced(act.id)
-            }
-
-            firebaseDataSource.setBarbarianLevel(toLevelDocumentMapper.map(getLatestLevel()))
-
-            return SyncResult.Success
-        } catch (e: Exception) {
-            Log.e(TAG, SYNC_TO_CLOUD_ERROR, e)
-            return SyncResult.Error(SYNC_TO_CLOUD_ERROR)
-        }
-    }
-
-    private suspend fun syncFromCloud(): SyncResult {
-        try {
-            firebaseDataSource.getAllActs().forEach {
-                actDao.insert(toBarbarianActMapper.map(it))
-            }
-
-            firebaseDataSource.getBarbarianLevel()?.let {
-                levelDao.updateBarbarianLevel(toBarbarianLevelMapper.map(it).copy(synced = true))
-            }
-
-            return SyncResult.Success
-        } catch (e: Exception) {
-            Log.e(TAG, SYNC_FROM_CLOUD_ERROR, e)
-            return SyncResult.Error(SYNC_FROM_CLOUD_ERROR)
-        }
-    }
-
     companion object {
         private const val TAG = "BarbarianRepository"
-        private const val SYNC_TO_CLOUD_ERROR = "Error syncing to cloud"
-        private const val SYNC_FROM_CLOUD_ERROR = "Error syncing from cloud"
+        private const val DEFAULT_TIMESTAMP = 0L
     }
 }

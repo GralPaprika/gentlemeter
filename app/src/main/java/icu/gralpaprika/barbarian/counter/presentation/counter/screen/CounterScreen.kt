@@ -1,8 +1,5 @@
 package icu.gralpaprika.barbarian.counter.presentation.counter.screen
 
-import android.content.Context
-import android.os.Build
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,9 +40,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import icu.gralpaprika.barbarian.counter.BuildConfig
 import icu.gralpaprika.barbarian.counter.R
-import icu.gralpaprika.barbarian.counter.presentation.activity.viewmodel.SharedViewModel
 import icu.gralpaprika.barbarian.counter.presentation.components.LoadingScreen
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.CounterScreenState
 import icu.gralpaprika.barbarian.counter.presentation.counter.screen.model.OvalShapeSize
@@ -61,11 +61,22 @@ private const val maxBarbarianLevel = BuildConfig.BARBARIAN_MAX_LEVEL
 @Composable
 fun CounterScreen() {
     val viewModel: CounterViewModel = hiltViewModel()
-    val sharedViewModel: SharedViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleObserver = LifecycleEventObserver { _, event ->
+        when (event) {
+            Lifecycle.Event.ON_PAUSE -> {
+                viewModel.syncData()
+            }
+            else -> {}
+        }
+    }
 
-    LaunchedEffect(Unit) {
-        sharedViewModel.syncData()
+    DisposableEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+        }
     }
 
     when (uiState) {
