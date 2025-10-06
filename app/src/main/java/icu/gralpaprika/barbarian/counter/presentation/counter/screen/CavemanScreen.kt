@@ -1,6 +1,5 @@
 package icu.gralpaprika.barbarian.counter.presentation.counter.screen
 
-import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -24,56 +23,56 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import icu.gralpaprika.barbarian.counter.R
 import icu.gralpaprika.barbarian.counter.presentation.counter.util.BarbarianImageUtil
-import icu.gralpaprika.barbarian.counter.presentation.counter.viewmodel.CounterViewModel
 import icu.gralpaprika.barbarian.counter.presentation.theme.BarbarianCounterTheme
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 const val WORD_ANIMATION_DELAY_MS = 600L
-const val ENTER_ANIMATION_DURATION_MS = 1400
-const val FADE_OUT_DURATION_MS = 600
-const val SLIDE_OUT_DURATION_MS = 1400
+const val ENTER_ANIMATION_DURATION_MS = 2400
+const val EXIT_ANIMATION_DURATION_MS = 2400
 @Composable
-fun LevelUpOverlay(
+fun CavemanScreen(
     onButtonClicked: () -> Unit = {},
     onDismissed: () -> Unit = {},
     onShown: () -> Unit = {},
+    visible: Boolean = false,
 ) {
+    var isVisible by remember { mutableStateOf(visible) }
     var isExiting by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(isExiting) {
         if (isExiting) {
-            delay((FADE_OUT_DURATION_MS + SLIDE_OUT_DURATION_MS).toLong())
             onDismissed()
             isExiting = false
         }
     }
 
     LaunchedEffect(Unit) {
+        isVisible = true
         onShown()
     }
 
     AnimatedVisibility(
-        visible = true,
+        visible = isVisible,
         enter = fadeIn(animationSpec = tween(ENTER_ANIMATION_DURATION_MS)),
-        exit = fadeOut(animationSpec = tween(FADE_OUT_DURATION_MS)) + slideOutVertically(
-            targetOffsetY = { -it }, animationSpec = tween(SLIDE_OUT_DURATION_MS)
-        )
+        exit = fadeOut(animationSpec = tween(EXIT_ANIMATION_DURATION_MS)) + slideOutVertically(
+            targetOffsetY = { -it }, animationSpec = tween(EXIT_ANIMATION_DURATION_MS)
+        ),
     ) {
         Box(
             modifier = Modifier
@@ -117,9 +116,14 @@ fun LevelUpOverlay(
                         .size(400.dp)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
+                // Dismiss button
                 Button(onClick = {
+                    isVisible = false
                     isExiting = true
-                    onButtonClicked()
+                    scope.launch {
+                        delay(EXIT_ANIMATION_DURATION_MS.toLong())
+                        onButtonClicked()
+                    }
                 }) {
                     Text(text = stringResource(R.string.dismiss))
                 }
@@ -132,10 +136,11 @@ fun LevelUpOverlay(
 @Composable
 fun LevelUpOverlayPreview() {
     BarbarianCounterTheme(darkTheme = true) {
-        LevelUpOverlay(
+        CavemanScreen(
             onButtonClicked = {},
             onDismissed = {},
-            onShown = {}
+            onShown = {},
+            visible = true,
         )
     }
 }

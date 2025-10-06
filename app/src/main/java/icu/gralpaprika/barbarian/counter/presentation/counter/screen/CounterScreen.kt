@@ -21,8 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +41,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -67,6 +64,29 @@ fun CounterScreen() {
     val viewModel: CounterViewModel = hiltViewModel()
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleObserver = LifecycleEventObserver { _, event ->
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> {
+                viewModel.uiState.observe(lifecycleOwner) { state ->
+                    when (state) {
+                        is CounterScreenState.Counter -> {
+                            navController.navigate(state) { popUpTo(state) }
+                        }
+                        is CounterScreenState.CavemanScreen -> {
+                            navController.navigate(state) { popUpTo(state) }
+                        }
+                        is CounterScreenState.Loading -> {
+                            navController.navigate(state) { popUpTo(state) }
+                        }
+                    }
+                }
+            }
+            Lifecycle.Event.ON_PAUSE -> {
+                viewModel.syncData()
+            }
+            else -> {}
+        }
+    }
 
     NavHost(navController = navController, startDestination = CounterScreenState.Loading) {
         composable<CounterScreenState.Counter> {
@@ -77,13 +97,7 @@ fun CounterScreen() {
             )
         }
         composable<CounterScreenState.CavemanScreen> {
-            LevelUpOverlay(
-                onShown = {
-                    viewModel.playCavemanSound()
-                },
-                onDismissed = {
-                    viewModel.stopCavemanSound()
-                },
+            CavemanScreen(
                 onButtonClicked = {
                     viewModel.onBarbarianButtonClicked()
                 }
@@ -91,36 +105,6 @@ fun CounterScreen() {
         }
         composable<CounterScreenState.Loading> {
             LoadingScreen()
-        }
-    }
-
-    val lifecycleObserver = LifecycleEventObserver { _, event ->
-        when (event) {
-            Lifecycle.Event.ON_CREATE -> {
-                viewModel.uiState.observe(lifecycleOwner) { state ->
-                    when (state) {
-                        is CounterScreenState.Counter -> {
-                            navController.navigate(state) {
-                                popUpTo(CounterScreenState.Counter)
-                            }
-                        }
-                        is CounterScreenState.CavemanScreen -> {
-                            navController.navigate(state) {
-                                popUpTo(CounterScreenState.CavemanScreen)
-                            }
-                        }
-                        is CounterScreenState.Loading -> {
-                            navController.navigate(state) {
-                                popUpTo(CounterScreenState.Loading)
-                            }
-                        }
-                    }
-                }
-            }
-            Lifecycle.Event.ON_PAUSE -> {
-                viewModel.syncData()
-            }
-            else -> {}
         }
     }
 
