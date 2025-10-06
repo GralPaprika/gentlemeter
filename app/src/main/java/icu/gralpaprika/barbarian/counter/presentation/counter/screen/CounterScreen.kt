@@ -43,6 +43,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import icu.gralpaprika.barbarian.counter.BuildConfig
 import icu.gralpaprika.barbarian.counter.R
 import icu.gralpaprika.barbarian.counter.presentation.components.LoadingScreen
@@ -56,15 +61,62 @@ import icu.gralpaprika.barbarian.counter.presentation.theme.PlayfairDisplay
 import icu.gralpaprika.barbarian.counter.presentation.theme.PlusJakartaSans
 
 private const val minBarbarianLevel = BuildConfig.BARBARIAN_MIN_LEVEL
-private const val maxBarbarianLevel = BuildConfig.BARBARIAN_MAX_LEVEL
 
 @Composable
 fun CounterScreen() {
     val viewModel: CounterViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
+    val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    NavHost(navController = navController, startDestination = CounterScreenState.Loading) {
+        composable<CounterScreenState.Counter> {
+            CounterScreenContent(
+                barbarianLevel = it.toRoute<CounterScreenState.Counter>().barbarianLevel,
+                onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() },
+                onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
+            )
+        }
+        composable<CounterScreenState.CavemanScreen> {
+            LevelUpOverlay(
+                onShown = {
+                    viewModel.playCavemanSound()
+                },
+                onDismissed = {
+                    viewModel.stopCavemanSound()
+                },
+                onButtonClicked = {
+                    viewModel.onBarbarianButtonClicked()
+                }
+            )
+        }
+        composable<CounterScreenState.Loading> {
+            LoadingScreen()
+        }
+    }
+
     val lifecycleObserver = LifecycleEventObserver { _, event ->
         when (event) {
+            Lifecycle.Event.ON_CREATE -> {
+                viewModel.uiState.observe(lifecycleOwner) { state ->
+                    when (state) {
+                        is CounterScreenState.Counter -> {
+                            navController.navigate(state) {
+                                popUpTo(CounterScreenState.Counter)
+                            }
+                        }
+                        is CounterScreenState.CavemanScreen -> {
+                            navController.navigate(state) {
+                                popUpTo(CounterScreenState.CavemanScreen)
+                            }
+                        }
+                        is CounterScreenState.Loading -> {
+                            navController.navigate(state) {
+                                popUpTo(CounterScreenState.Loading)
+                            }
+                        }
+                    }
+                }
+            }
             Lifecycle.Event.ON_PAUSE -> {
                 viewModel.syncData()
             }
@@ -78,15 +130,6 @@ fun CounterScreen() {
             lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
         }
     }
-
-    when (uiState) {
-        is CounterScreenState.Content -> CounterScreenContent(
-            barbarianLevel = (uiState as CounterScreenState.Content).barbarianLevel,
-            onBarbarianButtonClicked = { viewModel.onBarbarianButtonClicked() },
-            onGentlemanButtonClicked = { viewModel.onGentlemanButtonClicked() },
-        )
-        CounterScreenState.Loading -> LoadingScreen()
-    }
 }
 
 @Composable
@@ -99,19 +142,12 @@ fun CounterScreenContent(
     val screenHeight = screenSize.height
     val screenWidth = screenSize.width
 
-    var showLevelUp by remember { mutableStateOf(false) }
     var showModal by remember { mutableStateOf(false) }
-    
+
     val ovalBoxSize = when {
         screenHeight < 600 -> OvalShapeSize(width = 200.dp, height = 300.dp)
         screenHeight < 800 -> OvalShapeSize(width = 250.dp, height = 350.dp)
         else -> OvalShapeSize(width = 300.dp, height = 400.dp)
-    }
-
-    LaunchedEffect(barbarianLevel) {
-        if (barbarianLevel == maxBarbarianLevel) {
-            showLevelUp = true
-        }
     }
 
     val padding = when {
@@ -158,80 +194,71 @@ fun CounterScreenContent(
             },
         )
 
-        if (barbarianLevel < maxBarbarianLevel) {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(
+                    R.string.barbarian_acts_counter,
+                    barbarianLevel
+                ),
+                fontSize = 55.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontFamily = PlayfairDisplay,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = stringResource(R.string.ungentlemanly_acts),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = PlusJakartaSans,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .size(width = ovalBoxSize.width, height = ovalBoxSize.height)
+                    .clip(OvalCornerShape())
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = BarbarianImageUtil.getImageForBarbarianLevel(barbarianLevel)
+                    ),
+                    contentDescription = stringResource(R.string.gentleman_image_description),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Button(
+                onClick = { onBarbarianButtonClicked() },
+                modifier = Modifier.fillMaxWidth(0.8f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Text(
-                    text = stringResource(
-                        R.string.barbarian_acts_counter,
-                        barbarianLevel
-                    ),
-                    fontSize = 55.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontFamily = PlayfairDisplay,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    text = stringResource(R.string.ungentlemanly_acts),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = stringResource(R.string.barbarian_button),
                     fontFamily = PlusJakartaSans,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
                 )
-                Spacer(modifier = Modifier.height(32.dp))
-                Box(
-                    modifier = Modifier
-                        .size(width = ovalBoxSize.width, height = ovalBoxSize.height)
-                        .clip(OvalCornerShape())
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = BarbarianImageUtil.getImageForBarbarianLevel(barbarianLevel)
-                        ),
-                        contentDescription = stringResource(R.string.gentleman_image_description),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-                Button(
-                    onClick = { onBarbarianButtonClicked() },
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(
-                        text = stringResource(R.string.barbarian_button),
-                        fontFamily = PlusJakartaSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
-
-        LevelUpOverlay(
-            visible = showLevelUp,
-            imageSize = ovalBoxSize.height,
-            onButtonClicked = { onBarbarianButtonClicked() },
-            onDismissed = { showLevelUp = false },
-        )
     }
 }
 
@@ -266,7 +293,7 @@ fun CounterScreenContentPreview() {
         CounterScreenContent(
             barbarianLevel = 3,
             onGentlemanButtonClicked = {},
-            onBarbarianButtonClicked = {}
+            onBarbarianButtonClicked = {},
         )
     }
 }

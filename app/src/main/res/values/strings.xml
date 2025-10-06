@@ -8,11 +8,6 @@
     <string name="gentleman_button">Gentleman</string>
     <string name="barbarian_button">You Jerk!</string>
 
-    <!-- Level up strings -->
-    <string name="level_up_message">You’re now a caveman!</string>
-    <string name="continue_button">Continue</string>
-    <string name="dismiss">Dismiss</string>
-
     <!-- Gentleman dialog strings -->
     <string name="gentleman_dialog_message">Are you sure THIS guy behave like a gentleman?.</string>
     <string name="gentleman_dialog_confirm">Yes</string>
@@ -20,4 +15,6 @@
 
     <string name="sync_success">Sync to cloud successful</string>
     <string name="sync_error">Error syncing to cloud, try again later</string>
+    <string name="barbarian_overlay_title">YOU\'RE AN ASS!</string>
+    <string name="dismiss">Great job champ! 😀</string>
 </resources>
